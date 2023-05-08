@@ -1,0 +1,19 @@
+---
+title: "Predict_Cell_Cycle_for_scRNA_seq"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Predict_Cell_Cycle_for_scRNA_seq}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ccAFv2)
+```
