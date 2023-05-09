@@ -30,7 +30,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     print(paste0('  Predicting cell cycle state probabilities...'))
-    predictions1 = keras::predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
+    predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
     colnames(predictions1) = c('G1', 'G1/other', 'G2/M', 'Late G1', 'M/Early G1', 'Neural G0', 'S', 'S/G2')
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
@@ -40,7 +40,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
     print(paste0('  Adding probabilitities and predictions to metadata'))
-    seurat1 = Seurat::AddMetaData(object = seurat1, metadata = df1)
+    seurat1 = AddMetaData(object = seurat1, metadata = df1)
     print('Done')
     return(seurat1)
 }
@@ -55,6 +55,6 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
 DimPlot.ccAFv2 = function(seurat1, ...) {
-    dp1 = Seurat::DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G1/other' = '#9aca3c', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+    dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G1/other' = '#9aca3c', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
