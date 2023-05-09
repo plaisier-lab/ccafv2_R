@@ -14,20 +14,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-```
+```{r install}
 devtools::install_github("plaisier-lab/ccafv2_R/ccAFv2")
 ```
 
 
-```{r setup}
+```{r running}
 library(ccAFv2)
 
 library("org.Hs.eg.db")
 
 library(Seurat)
 
+library(grid)
+library(gridExtra)
+
 # Load up U5 expression
-U5_seurat = readRDS('data/U5_normalized_ensembl_041723.rds')
+U5_seurat = readRDS('data/U5_post_processing_ensembl_041923.rds')
+U5_seurat@meta.data$ccAFv2_py = U5_seurat@meta.data$ccAFv2
 
 s.genes = na.omit(unlist(mapIds(org.Hs.eg.db, keys = cc.genes$s.genes, keytype = "SYMBOL", column="ENSEMBL", multiVals='first')))
 g2m.genes = na.omit(unlist(mapIds(org.Hs.eg.db, keys = cc.genes$g2m.genes, keytype = "SYMBOL", column="ENSEMBL", multiVals='first')))
@@ -38,8 +42,15 @@ U5_seurat = CellCycleScoring(U5_seurat, s.features = s.genes, g2m.features = g2m
 # ccAFv2 cell cycle prediction method
 U5_seurat = PredictCellCycle(U5_seurat)
 
-# view cell cycle scores and phase assignments
-head(marrow[[]])
 ```
 
+```{r plotting}
+# Plot DimPlot of data
+pdf('ccAFv2_U5_vignette1.pdf')
+m1 = DimPlot(U5_seurat, group.by='Phase', reduction='umap')
+m2 = DimPlot.ccAFv2(U5_seurat, reduction='umap')
+lst1 = list(m1, m2)
+grid.arrange(grobs = lst1, layout_matrix = rbind(c(1,NA), c(2,NA)), top = "")
+dev.off()
 
+```

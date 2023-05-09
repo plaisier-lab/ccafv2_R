@@ -8,7 +8,7 @@
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
 PredictCellCycle = function(seurat1, cutoff=0.5) {
-    print('Running ccAFv2:')
+    cat('Running ccAFv2:\n')
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'))[,2]
@@ -38,7 +38,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
-    print('  Adding probabilitities and predictions to metadata\n')
+    cat('  Adding probabilitities and predictions to metadata\n')
     seurat1 = AddMetaData(object = seurat1, metadata = df1)
     cat('Done\n')
     return(seurat1)
