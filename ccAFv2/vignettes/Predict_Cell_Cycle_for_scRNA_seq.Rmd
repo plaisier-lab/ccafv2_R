@@ -14,29 +14,29 @@ knitr::opts_chunk$set(
 )
 ```
 
+```
+devtools::install_github("plaisier-lab/ccafv2_R/ccAFv2")
+```
+
+
 ```{r setup}
 library(ccAFv2)
 
+library("org.Hs.eg.db")
 
 library(Seurat)
 
-# Read in the expression matrix The first row is a header row, the first column is rownames
-exp.mat = read.table(file = 'cell_cycle_vignette_files/nestorawa_forcellcycle_expressionMatrix.txt', header = TRUE, as.is = TRUE, row.names = 1)
+# Load up U5 expression
+U5_seurat = readRDS('data/U5_normalized_ensembl_041723.rds')
 
-# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with Seurat.  We can
-# segregate this list into markers of G2/M phase and markers of S phase
-s.genes = cc.genes$s.genes
-g2m.genes = cc.genes$g2m.genes
-
-# Create our Seurat object and complete the initalization steps
-marrow = CreateSeuratObject(counts = exp.mat)
-marrow = SCTransform(marrow)
+s.genes = na.omit(unlist(mapIds(org.Hs.eg.db, keys = cc.genes$s.genes, keytype = "SYMBOL", column="ENSEMBL", multiVals='first')))
+g2m.genes = na.omit(unlist(mapIds(org.Hs.eg.db, keys = cc.genes$g2m.genes, keytype = "SYMBOL", column="ENSEMBL", multiVals='first')))
 
 # Seurat cell cycle scoring method
-marrow = CellCycleScoring(marrow, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+U5_seurat = CellCycleScoring(U5_seurat, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 
 # ccAFv2 cell cycle prediction method
-marrow = PredictCellCycle(marrow)
+U5_seurat = PredictCellCycle(U5_seurat)
 
 # view cell cycle scores and phase assignments
 head(marrow[[]])

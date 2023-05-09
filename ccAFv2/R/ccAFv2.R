@@ -12,6 +12,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'))[,2]
+    print(mgenes[1:5])
     
     # Subset data marker genes to marker genes included in classification
     seurat_subset = subset(seurat1, features = mgenes)
