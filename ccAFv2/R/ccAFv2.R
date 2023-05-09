@@ -12,16 +12,15 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'))[,2]
-    print(mgenes[1:5])
     
     # Subset data marker genes to marker genes included in classification
     seurat_subset = subset(seurat1, features = mgenes)
 
     # Find missing genes and assign 0s to each cell
-    print(paste0('  Marker genes for this classifier: ', length(mgenes)))
+    cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes)))
     missing_genes = setdiff(mgenes, rownames(seurat_subset[['SCT']]@data))
-    print(paste0('  Marker genes present in this dataset: ', nrow(seurat_subset[['SCT']]@data)))
-    print(paste0('  Missing marker genes in this dataset: ', length(missing_genes)))
+    cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[['SCT']]@data)))
+    cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes)))
     ## Add ERROR later to warn if not enough marker genes ##
     tmp = matrix(0,nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
@@ -29,19 +28,19 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     input_mat = seurat_subset[['SCT']]@data
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
-    print(paste0('  Predicting cell cycle state probabilities...'))
+    cat(paste0('  Predicting cell cycle state probabilities...'))
     predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
     colnames(predictions1) = c('G1', 'G1/other', 'G2/M', 'Late G1', 'M/Early G1', 'Neural G0', 'S', 'S/G2')
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
-    print(paste0('  Choosing cell cycle state...'))
+    cat(paste0('  Choosing cell cycle state...'))
     CellCycleState = data.frame(colnames(predictions1)[apply(predictions1,1,which.max)], row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
     print(paste0('  Adding probabilitities and predictions to metadata'))
     seurat1 = AddMetaData(object = seurat1, metadata = df1)
-    print('Done')
+    cat('Done')
     return(seurat1)
 }
 
