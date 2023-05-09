@@ -10,11 +10,11 @@
 PredictCellCycle = function(seurat1, cutoff=0.5) {
     print('Running ccAFv2:')
     # Load model and marker genes
-    ccAFv2 = keras:::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
+    ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'))[,2]
     
     # Subset data marker genes to marker genes included in classification
-    seurat_subset = Seurat::subset(seurat1, features = mgenes)
+    seurat_subset = subset(seurat1, features = mgenes)
 
     # Find missing genes and assign 0s to each cell
     print(paste0('  Marker genes for this classifier: ', length(mgenes)))
@@ -29,7 +29,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     print(paste0('  Predicting cell cycle state probabilities...'))
-    predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
+    predictions1 = keras::predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
     colnames(predictions1) = c('G1', 'G1/other', 'G2/M', 'Late G1', 'M/Early G1', 'Neural G0', 'S', 'S/G2')
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
