@@ -16,4 +16,30 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(ccAFv2)
+
+
+library(Seurat)
+
+# Read in the expression matrix The first row is a header row, the first column is rownames
+exp.mat = read.table(file = 'cell_cycle_vignette_files/nestorawa_forcellcycle_expressionMatrix.txt', header = TRUE, as.is = TRUE, row.names = 1)
+
+# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with Seurat.  We can
+# segregate this list into markers of G2/M phase and markers of S phase
+s.genes = cc.genes$s.genes
+g2m.genes = cc.genes$g2m.genes
+
+# Create our Seurat object and complete the initalization steps
+marrow = CreateSeuratObject(counts = exp.mat)
+marrow = SCTransform(marrow)
+
+# Seurat cell cycle scoring method
+marrow = CellCycleScoring(marrow, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+
+# ccAFv2 cell cycle prediction method
+marrow = PredictCellCycle(marrow)
+
+# view cell cycle scores and phase assignments
+head(marrow[[]])
 ```
+
+

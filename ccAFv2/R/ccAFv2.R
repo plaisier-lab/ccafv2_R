@@ -29,7 +29,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     print(paste0('  Predicting cell cycle state probabilities...'))
-    predictions1 = keras::predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
+    predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
     colnames(predictions1) = c('G1', 'G1/other', 'G2/M', 'Late G1', 'M/Early G1', 'Neural G0', 'S', 'S/G2')
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
