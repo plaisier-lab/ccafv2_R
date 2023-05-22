@@ -26,9 +26,6 @@ library("org.Hs.eg.db")
 
 library(Seurat)
 
-library(grid)
-library(gridExtra)
-
 # Load up U5 expression
 U5_seurat = readRDS('data/U5_post_processing_ensembl_041923.rds')
 U5_seurat@meta.data$ccAFv2_py = U5_seurat@meta.data$ccAFv2
@@ -45,6 +42,9 @@ U5_seurat = PredictCellCycle(U5_seurat)
 ```
 
 ```{r plotting}
+library(grid)
+library(gridExtra)
+
 # Plot DimPlot of data
 pdf('ccAFv2_U5_vignette1.pdf')
 m1 = DimPlot(U5_seurat, group.by='Phase', reduction='umap')
