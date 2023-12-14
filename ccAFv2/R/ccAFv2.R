@@ -22,7 +22,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5, species='human', gene_id='ensem
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
     cat(mgenes)
-    cat(len(mgenes))
+    cat(length(mgenes))
     
     # Subset data marker genes to marker genes included in classification
     cat('Subset')
