@@ -1,17 +1,26 @@
 #' Predict Cell Cycle
 #'
 #' This function predicts the cell cycle state for each cell in the object
-#' using the ccAFv2 cell cycle classifier. [Which cell cycle states/phases]
-#' [How to interpret data]
+#' using the ccAFv2 cell cycle classifier. The possible cell cycle states that
+#' ccAFv2 can predict are: Neural G0, G1, G1/other, Late G1, S, S/G2, G2/M,
+#' and M/Early G1.
+#'
+#' The ccAFv2 predicts the cell cycle state for each cell in the object by
+#' selecting the cell cycle state for each cell with the maximum cell cycle
+#' state probability. If the cell cycle state probability for a cell does not
+#' meet the probability cutoff, the cell will receive an 'Unknown' cell cycle
+#' state prediction. ccAFv2 cell cycle state predictions and probabilities for
+#' each cell in the object will be stored in the object .obs after classification.
+#'
 #'
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat1, cutoff=0.5) {
+PredictCellCycle = function(seurat1, cutoff=0.5, species='human', gene_id='ensembl') {
     cat('Running ccAFv2:\n')
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
-    mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'))[,2]
+    mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=0, row.names=1)[,paste0(species,'_',gene_id)]
     
     # Subset data marker genes to marker genes included in classification
     seurat_subset = subset(seurat1, features = mgenes)
@@ -22,11 +31,11 @@ PredictCellCycle = function(seurat1, cutoff=0.5) {
     cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[['SCT']]@data),'\n'))
     cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
     ## Add ERROR later to warn if not enough marker genes ##
-    tmp = matrix(0,nrow=length(missing_genes), ncol=ncol(seurat1))
-    rownames(tmp) = missing_genes
-    colnames(tmp) = colnames(seurat_subset)
     input_mat = seurat_subset[['SCT']]@data
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
+    tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
+    rownames(tmp) = missing_genes
+    colnames(tmp) = colnames(seurat_subset)
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
     predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
