@@ -25,8 +25,10 @@ PredictCellCycle = function(seurat1, cutoff=0.5, species='human', gene_id='ensem
     cat(length(mgenes))
     
     # Subset data marker genes to marker genes included in classification
-    cat('Subset')
-    seurat_subset = subset(seurat1, features = mgenes)
+    cat('Subset\n')
+    sub_genes = intersect(row.names(seurat2),mgenes)
+    cat(paste0(length(sub_genes),'\n')
+    seurat_subset = subset(seurat1, features = sub_genes)
     
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
