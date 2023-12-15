@@ -22,12 +22,9 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)[,1]
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
-    cat(paste0(length(mgenes),'\n'))
     
     # Subset data marker genes to marker genes included in classification
-    cat('Subset\n')
     sub_genes = intersect(row.names(seurat1),mgenes)
-    cat(paste0(length(sub_genes),'\n'))
     seurat_subset = subset(seurat1, features = sub_genes)
     
     # Find missing genes and assign 0s to each cell
