@@ -36,15 +36,18 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     input_mat = seurat_subset[[assay]]@data
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
+    cat('1\n')
     rownames(tmp) = missing_genes
     colnames(tmp) = colnames(seurat_subset)
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
     predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
+    cat('2\n')
     colnames(predictions1) = classes
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
     cat(paste0('  Choosing cell cycle state...\n'))
+    cat('3\n')
     CellCycleState = data.frame(colnames(predictions1)[apply(predictions1,1,which.max)], row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
