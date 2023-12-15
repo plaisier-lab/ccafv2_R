@@ -45,7 +45,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
     cat(paste0('  Choosing cell cycle state...\n'))
-    CellCycleState = factor(data.frame(colnames(predictions1)[apply(predictions1,1,which.max)], row.names = rownames(predictions1)), levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1'))
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)]levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
