@@ -45,7 +45,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
     cat(paste0('  Choosing cell cycle state...\n'))
-    CellCycleState = data.frame(colnames(predictions1)[apply(predictions1,1,which.max)], row.names = rownames(predictions1))
+    CellCycleState = factor(data.frame(colnames(predictions1)[apply(predictions1,1,which.max)], row.names = rownames(predictions1)), levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1'))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
@@ -65,6 +65,6 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
 DimPlot.ccAFv2 = function(seurat1, ...) {
-    dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G1/other' = '#9aca3c', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+    dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
