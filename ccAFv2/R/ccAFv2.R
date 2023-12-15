@@ -26,7 +26,7 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     
     # Subset data marker genes to marker genes included in classification
     cat('Subset\n')
-    sub_genes = intersect(row.names(seurat2),mgenes)
+    sub_genes = intersect(row.names(seurat1),mgenes)
     cat(paste0(length(sub_genes),'\n'))
     seurat_subset = subset(seurat1, features = sub_genes)
     
