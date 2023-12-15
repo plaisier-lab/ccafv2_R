@@ -16,7 +16,7 @@
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat1, cutoff=0.5, species='human', gene_id='ensembl') {
+PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', gene_id='ensembl') {
     cat('Running ccAFv2:\n')
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
@@ -32,11 +32,11 @@ PredictCellCycle = function(seurat1, cutoff=0.5, species='human', gene_id='ensem
     
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
-    missing_genes = setdiff(mgenes, rownames(seurat_subset[['SCT']]@data))
-    cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[['SCT']]@data),'\n'))
+    missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@data))
+    cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@data),'\n'))
     cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
     ## Add ERROR later to warn if not enough marker genes ##
-    input_mat = seurat_subset[['SCT']]@data
+    input_mat = seurat_subset[[assay]]@data
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
