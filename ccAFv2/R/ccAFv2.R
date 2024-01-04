@@ -55,6 +55,7 @@ PredictCellCycle = function(seurat0, cutoff=0.5, assay='SCT', species='human', g
     rownames(tmp) = missing_genes
     colnames(tmp) = colnames(seurat_subset)
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
+    input_mat_scaled_add_missing_genes[!is.finite(input_mat_scaled_add_missing_genes)] = 0
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
     predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
     colnames(predictions1) = classes
