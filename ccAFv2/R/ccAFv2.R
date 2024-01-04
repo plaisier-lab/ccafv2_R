@@ -66,7 +66,7 @@ PredictCellCycle = function(seurat0, cutoff=0.5, assay='SCT', species='human', g
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
     cat('  Adding probabilitities and predictions to metadata\n')
-    seurat1 = AddMetaData(object = seurat0, metadata = df1)
+    seurat0 = AddMetaData(object = seurat0, metadata = df1)
     cat('Done\n')
     return(seurat0)
 }
