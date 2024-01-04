@@ -16,24 +16,40 @@
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', gene_id='ensembl') {
+PredictCellCycle = function(seurat0, cutoff=0.5, assay='SCT', species='human', gene_id='ensembl') {
     cat('Running ccAFv2:\n')
+    # Make a copy of object
+    seurat1 = seurat0
+
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
     
+    # Run SCTransform on data being sure to include the mgenes
+    if(assay=='SCT') {
+        seurat1 = SCTransform(seurat1, return.only.var.genes=FALSE, verbose=FALSE)
+    }
+
     # Subset data marker genes to marker genes included in classification
     sub_genes = intersect(row.names(seurat1),mgenes)
     seurat_subset = subset(seurat1, features = sub_genes)
     
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
-    missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@data))
-    cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@data),'\n'))
-    cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
-    ## Add ERROR later to warn if not enough marker genes ##
-    input_mat = seurat_subset[[assay]]@data
+    if(assay=='SCT') {
+        missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@scale.data))
+        cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@scale.data),'\n'))
+        cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
+        ## Add ERROR later to warn if not enough marker genes ##
+        input_mat = seurat_subset[[assay]]@scale.data
+    } else {
+        missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@data))
+        cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@data),'\n'))
+        cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
+        ## Add ERROR later to warn if not enough marker genes ##
+        input_mat = seurat_subset[[assay]]@data
+    }
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
@@ -50,9 +66,9 @@ PredictCellCycle = function(seurat1, cutoff=0.5, assay='SCT', species='human', g
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
     cat('  Adding probabilitities and predictions to metadata\n')
-    seurat1 = AddMetaData(object = seurat1, metadata = df1)
+    seurat1 = AddMetaData(object = seurat0, metadata = df1)
     cat('Done\n')
-    return(seurat1)
+    return(seurat0)
 }
 
 #' DimPlot of ccAFv2 predictions with standard colors
