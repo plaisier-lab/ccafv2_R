@@ -16,7 +16,7 @@
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat0, cutoff=0.5, assay='SCT', species='human', gene_id='ensembl') {
+PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl') {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat0
@@ -27,7 +27,7 @@ PredictCellCycle = function(seurat0, cutoff=0.5, assay='SCT', species='human', g
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
     
     # Run SCTransform on data being sure to include the mgenes
-    if(assay=='SCT') {
+    if(assay=='SCT' & do_sctransform) {
         seurat1 = SCTransform(seurat1, return.only.var.genes=FALSE, verbose=FALSE)
     }
 
