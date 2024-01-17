@@ -16,7 +16,7 @@
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = False) {
+PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat0
