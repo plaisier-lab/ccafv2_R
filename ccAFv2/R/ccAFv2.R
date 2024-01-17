@@ -89,3 +89,17 @@ DimPlot.ccAFv2 = function(seurat1, ...) {
     dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
+
+#' SpatialDimPlot of ccAFv2 predictions with standard colors
+#'
+#' This function predicts the cell cycle state for each cell in the object
+#' using the ccAFv2 cell cycle classifier. [Which cell cycle states/phases]
+#' [How to interpret data]
+#'
+#' @param Seurat object that should have ccAFv2 cell cycle states predicted.
+#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+#' @export
+SpatialDimPlot.ccAFv2 = function(seurat1, ...) {
+    dp1 = SpatialDimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+    return(dp1)
+}
