@@ -16,7 +16,7 @@
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
 #' @export
-PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl') {
+PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = False) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat0
@@ -28,7 +28,11 @@ PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT
     
     # Run SCTransform on data being sure to include the mgenes
     if(assay=='SCT' & do_sctransform) {
-        seurat1 = SCTransform(seurat1, return.only.var.genes=FALSE, verbose=FALSE)
+        if(!spatial) {
+            seurat1 = SCTransform(seurat1, return.only.var.genes=FALSE, verbose=FALSE)
+        } else {
+            seurat1 = SCTransform(seurat1, assay = 'Spatial', return.only.var.genes=FALSE, verbose=FALSE)
+        }
     }
 
     # Subset data marker genes to marker genes included in classification
