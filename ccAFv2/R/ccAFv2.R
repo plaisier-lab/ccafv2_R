@@ -28,6 +28,7 @@ PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT
     
     # Run SCTransform on data being sure to include the mgenes
     if(assay=='SCT' & do_sctransform) {
+        cat('  Redoing SCTransform to ensure maximum overlap with classifeir genes...\n')
         if(!spatial) {
             seurat1 = SCTransform(seurat1, return.only.var.genes=FALSE, verbose=FALSE)
         } else {
