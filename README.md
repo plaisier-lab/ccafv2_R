@@ -52,7 +52,13 @@ seurat_obj = PredictCellCycle(seurat_obj)
 ```
 There are several options that can be passed to the PredictCellCycle function:
 ```
-PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) 
+PredictCellCycle = function(seurat0, 
+                            cutoff=0.5, 
+                            do_sctransform=TRUE,
+                            assay='SCT',
+                            species='human',
+                            gene_id='ensembl',
+                            spatial = FALSE) 
 ```
 - seurat0: seurat_obj, no default
 - cutoff: the value used to threchold the likelihoods, default is 0.5
