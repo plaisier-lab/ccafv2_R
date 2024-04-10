@@ -79,12 +79,10 @@ PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT
 
 #' DimPlot of ccAFv2 predictions with standard colors
 #'
-#' This function predicts the cell cycle state for each cell in the object
-#' using the ccAFv2 cell cycle classifier. [Which cell cycle states/phases]
-#' [How to interpret data]
+#' This function plots the cell cycle onto a DimPlot for single cell or nuclei data.
 #'
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
-#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+#' @return A DimPlot object that can be plotted.
 #' @export
 DimPlot.ccAFv2 = function(seurat1, ...) {
     dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
@@ -93,14 +91,38 @@ DimPlot.ccAFv2 = function(seurat1, ...) {
 
 #' SpatialDimPlot of ccAFv2 predictions with standard colors
 #'
-#' This function predicts the cell cycle state for each cell in the object
-#' using the ccAFv2 cell cycle classifier. [Which cell cycle states/phases]
-#' [How to interpret data]
+#' This function plots the cell cycle onto a DimPlot for spatial data.
 #'
-#' @param Seurat object that should have ccAFv2 cell cycle states predicted.
-#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+#' @param Seurat object with ccAFv2 cell cycle states predicted.
+#' @return A DimPlot object that can be plotted.
 #' @export
 SpatialDimPlot.ccAFv2 = function(seurat1, ...) {
     dp1 = SpatialDimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
+}
+
+#' ThresholdPlot of ccAFv2 predictions with a range of thresholds using standard colors
+#'
+#' This function plots the distribution of cell cycle predictions for a range of thresholds
+#' as a barplot colorized using the standard cell cycle state colors.
+#'
+#' @param Seurat object with ccAFv2 cell cycle states predicited.
+#' @return A ggplot object that can be plotted.
+#' @export
+ThresholdPlot = function(seurat1, ...) {
+    predictions1 = seurat1@meta.data[,c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+    colnames(CellCycleState) = 'ccAFv2'
+    dfall = data.frame(table(CellCycleState)/nrow(CellCycleState))
+    dfall[,'threshold'] = 0
+    for(cutoff in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
+        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+        colnames(CellCycleState) = 'ccAFv2'
+        CellCycleState[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
+        df1 = data.frame(table(CellCycleState)/nrow(CellCycleState))
+        df1[,'Threshold'] = as.character(cutoff)
+        dfall = rbind(dfall, df1)
+    }
+    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
+    return(tp1)
 }
