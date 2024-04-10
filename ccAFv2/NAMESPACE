@@ -3,3 +3,4 @@
 export(SpatialDimPlot.ccAFv2)
 export(DimPlot.ccAFv2)
 export(PredictCellCycle)
+export(ThresholdPlot)
