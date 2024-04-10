@@ -51,7 +51,7 @@ seurat_obj = PredictCellCycle(seurat_obj)
 
 ```
 There are several options that can be passed to the PredictCellCycle function:
-```
+```r
 PredictCellCycle = function(seurat0, 
                             cutoff=0.5, 
                             do_sctransform=TRUE,
