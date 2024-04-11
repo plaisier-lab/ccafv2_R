@@ -32,7 +32,7 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 
 ### Requirements
 
-It is strongly suggested that users utilize the docker images we provide on DockerHub as they contain all dependencies needed to run ccAFv2.
+> It is strongly suggested that users utilize the Docker images we provide on DockerHub, as they contain all the dependencies needed to run ccAFv2.
 
 #### Dependencies
 
@@ -87,7 +87,7 @@ docker run -it -v '<replace with the location for your files>:/files' cplaisier/
 
 ### Installing ccAFv2
 
-**NOTE**: The Docker images already have ccAFv2 installed, and this both of these commands are unnecessary if you use the Docker images.
+> **NOTE**: The Docker images already have ccAFv2 installed, and this both of these commands are unnecessary if you use the Docker images.
 
 Once the depnencies are met ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which muse be installed first. The devtools packace can be installed using the command:
 
