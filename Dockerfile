@@ -16,22 +16,9 @@ RUN pip3 install tensorflow==2.12.*
 
 RUN R -e "install.packages(c('devtools','roxygen2'))"
 RUN R -e "install.packages(c('keras', 'plumber', 'yaml', 'base64enc', 'remotes', 'readr', 'writexl'))"
-RUN R -e "devtools::install_github('navinlabcode/copykat')"
 RUN R -e "install.packages(c('BiocManager'))"
 RUN R -e "BiocManager::install('org.Hs.eg.db')"
 RUN R -e "BiocManager::install(c('org.Mm.eg.db'))"
-RUN apt-get install -y libxml2-dev
-RUN R -e "install.packages(c('beanplot','mixtools','pheatmap','zoo','squash'))"
-RUN R -e "install.packages(c('XML'),repos='http://www.omegahat.net/R')"
-RUN R -e "BiocManager::install(c('biomaRt','scran','ComplexHeatmap'))"
-RUN R -e "devtools::install_github('diazlab/CONICS/CONICSmat', dep=FALSE)"
-
-RUN R -e "install.packages(c('tidyverse'))"
-
-RUN R -e "BiocManager::install('tricycle')"
-RUN R -e "devtools::install_github('jhsiao999/peco')"
-RUN R -e "install.packages(c('mclust', 'TSP', 'aricode'))"
 RUN R -e "devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')"
-
 RUN apt-get install -y vim
 RUN R -e "install.packages(c('ADImpute','yarrr'))"

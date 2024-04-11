@@ -6,6 +6,13 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 ## Table of Contents
 
 - [Install](#install)
+    - [Requirements](#requirements)
+        - [Dependencies](#dependencies)
+        - [Dockerfile](#dockerfile)
+        - [Docker images](#docker-images)
+        - [Seurat 4.X version](#seurat-4.X-version)
+        - [Seurat 5.X version](#seurat-5.X-version)
+    - [Installing ccAFv2](#installing-ccafv2)
 - [Classifying single cell or nuclei RNA-seq](#classifying-single-cell-or-nuclei-rna-seq)
     - [Input for classification](#input-for-classification)
     - [Test data](#test-data)
@@ -38,35 +45,43 @@ These dependencies must be met to run ccAFv2 classification:
     - Seurat 4 or 5 - [install link](https://satijalab.org/seurat/articles/install_v5)
     - keras - [install link](https://cran.r-project.org/web/packages/keras/vignettes/)
 
-#### Docker images
+#### Dockerfile
 
-We provide a Dockerfile and already compiled docker image in DockerHub:
+We provide a Dockerfile that install all the dependencies needed to run ccAFv2 so that it can be merged with a users Dockerfile.
 
 - [Dockerfile](https://github.com/plaisier-lab/ccafv2_R/blob/main/Dockerfile)
-- DockerHub images:
 
-##### Seurat 4.X version: [cplaisier/ccafv2_seurat4](https://hub.docker.com/r/cplaisier/ccafv2_seurat4)
+#### Docker images
+
+We also provide fully compiled Docker images on DockerHub for ease of use. We provide two versions that provide users options as to which version of Seurat they are using (4.X and 5.X).
+
+##### Seurat 4.X version
+
+[cplaisier/ccafv2_seurat4](https://hub.docker.com/r/cplaisier/ccafv2_seurat4)
 
 ```
 docker pull cplaisier/ccafv2_seurat4
 ```
 
-##### Seurat 5.X version: [cplaisier/ccafv2_seurat5](https://hub.docker.com/r/cplaisier/ccafv2_seurat5)
+##### Seurat 5.X version
+
+[cplaisier/ccafv2_seurat5](https://hub.docker.com/r/cplaisier/ccafv2_seurat5)
 
 ```
 docker pull cplaisier/ccafv2_seurat5
 ```
 
-
 ### Installing ccAFv2
 
-The installation of ccAv2 in R requires the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package be install first. The devtools packace can be accomplished using the command:
+**NOTE**: The Docker images already have ccAFv2 installed, and this both of these commands are unnecessary if you use the Docker images.
+
+Once the depnencies are met ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which muse be installed first. The devtools packace can be installed using the command:
 
 ```r
 install.packages('devtools')
 ```
 
-Once the devtools package is installed it can then be used to install the ccAFv2 R package using the following command:
+Once the devtools package is installed it can then be used to install the ccAFv2 R package from this github repository using the following command:
 
 ```r
 devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
