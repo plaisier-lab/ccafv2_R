@@ -40,7 +40,23 @@ These dependencies must be met to run ccAFv2 classification:
 
 #### Docker images
 
-We 
+We provide a Dockerfile and already compiled docker image in DockerHub:
+
+- [Dockerfile](https://github.com/plaisier-lab/ccafv2_R/blob/main/Dockerfile)
+- DockerHub images:
+
+##### Seurat 4.X version: [cplaisier/ccafv2_seurat4](https://hub.docker.com/r/cplaisier/ccafv2_seurat4)
+
+```
+docker pull cplaisier/ccafv2_seurat4
+```
+
+##### Seurat 5.X version: [cplaisier/ccafv2_seurat5](https://hub.docker.com/r/cplaisier/ccafv2_seurat5)
+
+```
+docker pull cplaisier/ccafv2_seurat5
+```
+
 
 ### Installing ccAFv2
 
