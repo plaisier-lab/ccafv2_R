@@ -17,15 +17,13 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
     - [Input for classification](#input-for-classification)
     - [Test data](#test-data)
 	- [Cell cycle classification](#cell-cycle-classification)
-	- [Cell cycle likelihoods](#cell-cycle-classification)
     - [Plotting cell cycle states](#plotting-cell-cycle-states)
-	- [Applying thresholds](#applying-thresholds)
+        - [Plotting a UMAP with cell cycle states](#plotting-a-umap-with-cell-cycle-states)
+        - [Plotting the impact of varying likelihood thresholds](#plotting-the-impact-of-varying-likelihood-thresholds)
 	- [Cell cycle regression](#cell-cycle-regression)
 - [Classifying spatial RNA-seq](#classifying-spatial-rna-seq)
-	- [Cell cycle classification](#cell-cycle-classification)
-	- [Cell cycle likelihoods](#cell-cycle-classification)
-    - [Plotting cell cycle states](#plotting-cell-cycle-states)
-	- [Applying thresholds](#applying-thresholds)
+	- [Spatial cell cycle classification](#spatial-cell-cycle-classification)
+    - [Plotting cell cycle states onto images](#plotting-cell-cycle-states-onto-images)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 
@@ -276,10 +274,6 @@ When the classifier is running it should look something like this:
 For details about expected output please see classifying cells and nuclei above.
 
 ### Plotting cell cycle states onto images
-
-We provide plotting functions that colorize the cell cycle states in the way used in our manuscripts. We strongly suggest using these functions when plotting if possible.
-
-#### Plotting cell cycle states onto images
 
 Plotting cell cycle states onto the images taken of the tissue slices before spatial RNA-seq is a common way to represent spatial RNA-seq data. We have an overloaded SpatialDimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that SpatialDimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
 
