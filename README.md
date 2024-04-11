@@ -198,24 +198,59 @@ We provide plotting functions that colorize the cell cycle states in the way use
 Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, exceptr for group.by and cols. Here is how the plotting function should be run:
 
 ```r
+pdf('ccAFv2_DimPlot.pdf')
 DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
 ```
-The resulting DimPlot:
+Below is a DimPlot for U5 hNSCs colorized using the cell cycle states. The expected flow of the cell cycle states can be seen in the UMAP.
 
 ![UMAP DimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot.png?raw=true)
 
 #### Plotting the impact of varying likelihood thresholds
 
-Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, exceptr for group.by and cols. Here is how the plotting function should be run:
+For certain datasets it may be necessary to adjust the likelihood threshold. We provide a plot that can make this process easier. The ThresholdPlot plots the relative proportions of cell cycle states across a range or likelihood thresholds from 0 to 0.9 by intervals of 0.1.
 
 ```r
-DimPlot.ccAFv2(seurat_obj)
+pdf('ccAFv2_ThresholdPlot.pdf')
+ThresholdPlot(seurat_obj)
+dev.off()
 ```
 
+Likelihood thersholds are on the x-axis and relative proportions of cell cycle states are on the y-axis. As can be seen as the likelihood thresholds increase the number of 'Unknown' cells increases.
+
+![Bar plot colorized with ccAFv2 cell cycle states acorss varios thresholds](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_ThresholdPlot.png?raw=true)
 
 ### Cell cycle regression
 
-- [open-source-template](https://github.com/davidbgk/open-source-template/) - A README template to encourage open-source contributions.
+The cell cycle imposes a strong biological signal on cell expression patterns. Thus it has become a common practice to regress the cell cycle expression out of cells expression, and then use the residual variance for further studies. We provide functionality to do this using the ccAFv2 marker genes.
+
+First, we collect expression module scores for the cell cycle states Late G1, S, S/G2, G2/M, and M/Early G1.
+
+```r
+seurat_obj = PrepareForCellCycleRegression(seurat_obj)
+```
+
+Then we regress these signatures out of the expression data:
+
+```r
+seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
+```
+
+And finally to plot the effect of regressing out the cell cycle on the UMAP:
+
+```r
+seurat_obj = RunPCA(seurat_obj)
+seurat_obj = RunUMAP(seurat_obj, dims=1:10)
+pdf('ccAFv2_DimPlot_regressed.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
+```
+
+Removing the cell cycle from the U5 hNSCs leads to a random distribution, because the cell cycle is the primary biological signal in these *in vitro* grown cell line.
+
+![UMAP DimPlot colorized with ccAFv2 cell cycle states after regressing out cell cycle](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot_regressed.png?raw=true)
 
 ## Maintainers
 
