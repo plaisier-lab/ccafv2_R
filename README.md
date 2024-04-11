@@ -200,6 +200,9 @@ Plotting cells using ther first two dimensions from a dimensionality reduction m
 ```r
 DimPlot.ccAFv2(seurat_obj)
 ```
+The resulting DimPlot:
+
+![UMAP DimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2/figs/blob/main/ccAFv2_DimPlot.png?raw=true)
 
 #### Plotting the impact of varying likelihood thresholds
 
