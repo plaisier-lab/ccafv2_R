@@ -21,7 +21,7 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
     - [Plotting cell cycle states](#plotting-cell-cycle-states)
 	- [Applying thresholds](#applying-thresholds)
 	- [Cell cycle regression](#cell-cycle-regression)
-- [Usage spatial RNA-seq](#usage)
+- [Classifying spatial RNA-seq](#classifying-spatial-rna-seq)
 	- [Cell cycle classification](#cell-cycle-classification)
 	- [Cell cycle likelihoods](#cell-cycle-classification)
     - [Plotting cell cycle states](#plotting-cell-cycle-states)
@@ -97,7 +97,7 @@ accurate classification of the cell cycle. For this reason the ccAFv2 PredictCel
 ### Test data
 
 The U5 human neural stem cell (hNSC) dataset used to train the ccAFv2 is available for testing purposes here:
-- [U5 hNSCs rds file](https://zenodo.org/records/10961176/files/U5_normalized_ensembl.rds?download=1)
+- [U5 hNSCs rds file](https://zenodo.org/records/10961633/files/U5_normalized_ensembl.rds?download=1)
 
 Download this file and place it into the directory in which you wish to run the ccAFv2 tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
 
@@ -107,9 +107,8 @@ Classification is as easy as two lines that can be added to any Seurat workflow.
 
 ```r
 library(ccAFv2)
-
+seurat_obj = readRDS('U5_normalized_ensembl.rds')
 seurat_obj = PredictCellCycle(seurat_obj)
-
 ```
 When the classifier is running it should look something like this:
 
@@ -186,7 +185,6 @@ AAACGCACCTTCTA-1 4.957183e-07 9.401034e-07 9.998928e-01 3.640788e-05 S
 AAACGCTGGTATGC-1 7.537001e-06 3.954049e-04 9.016516e-04 2.307067e-04 Late G1
 AAACGCTGTGCTGA-1 1.102674e-08 9.998627e-01 2.419535e-06 1.108445e-06 Neural G0
 AAACGGCTGTCTAG-1 7.390769e-04 5.405837e-01 5.436572e-03 3.998061e-02 Neural G
-
 ```
 
 ### Plotting cell cycle states
@@ -195,13 +193,12 @@ We provide plotting functions that colorize the cell cycle states in the way use
 
 #### Plotting a UMAP with cell cycle states
 
-Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, exceptr for group.by and cols. Here is how the plotting function should be run:
+Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
 
 ```r
 pdf('ccAFv2_DimPlot.pdf')
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
-
 ```
 Below is a DimPlot for U5 hNSCs colorized using the cell cycle states. The expected flow of the cell cycle states can be seen in the UMAP.
 
@@ -245,12 +242,55 @@ seurat_obj = RunUMAP(seurat_obj, dims=1:10)
 pdf('ccAFv2_DimPlot_regressed.pdf')
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
-
 ```
 
 Removing the cell cycle from the U5 hNSCs leads to a random distribution, because the cell cycle is the primary biological signal in these *in vitro* grown cell line.
 
 ![UMAP DimPlot colorized with ccAFv2 cell cycle states after regressing out cell cycle](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot_regressed.png?raw=true)
+
+
+## Classifying spatial RNA-seq
+
+### Input for classification
+
+It is expected that the input for the ccAFv2 classifier will be a Seurat object that has been thorougly quality controlled. We provide an example of our quality control pipeline in can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). Is is preferred that the data in the Seurat object be SCTransformed, however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the accurate classification of the cell cycle. For this reason the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
+
+### Test data
+
+The U5 human neural stem cell (hNSC) dataset used to train the ccAFv2 is available for testing purposes here:
+- [Zeng et al., 2023 - 4 weeks post conception human fetus - slice 1](https://zenodo.org/records/10961633/files/GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds?download=1)
+
+Download this file and place it into the directory in which you wish to run the ccAFv2 spatial tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
+
+### Cell cycle classification
+
+Classification is as easy as two lines that can be added to any Seurat workflow. First the library must be loaded and then the PredictCellCycle function is run:
+
+```r
+library(ccAFv2)
+spatial_obj = readRDS('GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds')
+spatial_obj = PredictCellCycle(spatial_obj, species='human', gene_id='symbol', spatial=TRUE)
+```
+When the classifier is running it should look something like this:
+
+For details about expected output please see classifying cells and nuclei above.
+
+### Plotting cell cycle states onto images
+
+We provide plotting functions that colorize the cell cycle states in the way used in our manuscripts. We strongly suggest using these functions when plotting if possible.
+
+#### Plotting cell cycle states onto images
+
+Plotting cell cycle states onto the images taken of the tissue slices before spatial RNA-seq is a common way to represent spatial RNA-seq data. We have an overloaded SpatialDimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that SpatialDimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
+
+```r
+pdf('ccAFv2_SpatialDimPlot_slice1.pdf')
+SpatialDimPlot.ccAFv2(spatial_obj) + theme(legend.position = "right")
+dev.off()
+```
+Below is a SpatialDimPlot for slice 1 of a human fetus at 4 weeks post-conception colorized using the cell cycle states.
+
+![UMAP SpatialDimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_SpatialDimPlot_slice1.png?raw=true)
 
 ## Maintainers
 
