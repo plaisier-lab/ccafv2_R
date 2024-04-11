@@ -13,13 +13,19 @@
 #' each cell in the object will be stored in the object .obs after classification.
 #'
 #'
-#' @param Seurat object that should have ccAFv2 cell cycle states predicted.
-#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+#' @param seurat0: a seurat object must be supplied to classify, no default
+#' @param cutoff: the value used to threchold the likelihoods, default is 0.5
+#' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
+#' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+#' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
+#' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
+#' @param spatial: whether the data is spatial, defaults to FALSE
+#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
-    seurat1 = seurat0
+    seurat1 = seurat_obj
 
     # Load model and marker genes
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
@@ -72,9 +78,31 @@ PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
     cat('  Adding probabilitities and predictions to metadata\n')
-    seurat0 = AddMetaData(object = seurat0, metadata = df1)
+    seurat_obj = AddMetaData(object = seurat_obj, metadata = df1)
     cat('Done\n')
-    return(seurat0)
+    return(seurat_obj)
+}
+
+#' Prepare expression module scores for regressing out the cell cycle
+#'
+#' This function computes moduel scores for each cell cycle state
+#'
+#' @param seurat0: a seurat object must be supplied to classify, no default
+#' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+#' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
+#' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
+#' @param spatial: whether the data is spatial, defaults to FALSE
+#' @return Seurat object with cell cycle state module scores appended to meta.data
+#' @export
+PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human', gene_id='ensembl') {
+    marker_genes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)
+
+    cluster_genes = list()
+    for (cluster in c('Late.G1','S','S.G2','G2.M','M.Early.G1')) {
+        cluster_genes[[cluster]] = marker_genes[marker_genes[,cluster]==1,paste(species,gene_id,sep='_')]
+    }
+    seurat_obj = AddModuleScore(seurat_obj, features = cluster_genes, name = paste0(c('Late.G1','S','S.G2','G2.M','M.Early.G1'), '_exprs'))
+    return(seurat_obj)
 }
 
 #' DimPlot of ccAFv2 predictions with standard colors
@@ -84,8 +112,8 @@ PredictCellCycle = function(seurat0, cutoff=0.5, do_sctransform=TRUE, assay='SCT
 #' @param Seurat object that should have ccAFv2 cell cycle states predicted.
 #' @return A DimPlot object that can be plotted.
 #' @export
-DimPlot.ccAFv2 = function(seurat1, ...) {
-    dp1 = DimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+DimPlot.ccAFv2 = function(seurat_obj, ...) {
+    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
 
@@ -96,8 +124,8 @@ DimPlot.ccAFv2 = function(seurat1, ...) {
 #' @param Seurat object with ccAFv2 cell cycle states predicted.
 #' @return A DimPlot object that can be plotted.
 #' @export
-SpatialDimPlot.ccAFv2 = function(seurat1, ...) {
-    dp1 = SpatialDimPlot(seurat1, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
+    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
 
@@ -109,8 +137,8 @@ SpatialDimPlot.ccAFv2 = function(seurat1, ...) {
 #' @param Seurat object with ccAFv2 cell cycle states predicited.
 #' @return A ggplot object that can be plotted.
 #' @export
-ThresholdPlot = function(seurat1, ...) {
-    predictions1 = seurat1@meta.data[,c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
+ThresholdPlot = function(seurat_obj, ...) {
+    predictions1 = seurat_obj@meta.data[,c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
     CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     dfall = data.frame(table(CellCycleState)/nrow(CellCycleState))

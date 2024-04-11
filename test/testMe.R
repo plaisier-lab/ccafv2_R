@@ -25,5 +25,14 @@ ThresholdPlot(seurat_obj)
 dev.off()
 
 # Regress out cell cycle
+seurat_obj = PrepareForCellCycleRegression(seurat_obj)
+seurat_obj = SCTransform(data2, vars.to.regress = c("Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
+
+# Plot cell cycle regressed UMAP
+seurat_obj = RunPCA(seurat_obj)
+seurat_obj = RunUMAP(suerat_obj)
+pdf('ccAFv2_DimPlot_regressed.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
 
 
