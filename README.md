@@ -56,18 +56,33 @@ We also provide fully compiled Docker images on DockerHub for ease of use. We pr
 
 ##### Seurat 4.X version
 
-[cplaisier/ccafv2_seurat4](https://hub.docker.com/r/cplaisier/ccafv2_seurat4)
+Link to DockerHub image:  [cplaisier/ccafv2_seurat4](https://hub.docker.com/r/cplaisier/ccafv2_seurat4)
+
+Command to pull the image down:
 
 ```
 docker pull cplaisier/ccafv2_seurat4
 ```
 
+Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want mounted onto the docker instance. The files can then be found in /files on the instance, and locally on your computer in the path specified.
+
+```sh
+docker run -it -v '<replace with the location for your files>:/files' cplaisier/ccafv2_seurat4
+```
+
 ##### Seurat 5.X version
 
-[cplaisier/ccafv2_seurat5](https://hub.docker.com/r/cplaisier/ccafv2_seurat5)
+Link to DockerHub image:  [cplaisier/ccafv2_seurat5](https://hub.docker.com/r/cplaisier/ccafv2_seurat5)
+
+Command to pull the image down:
 
 ```
 docker pull cplaisier/ccafv2_seurat5
+```
+Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want mounted onto the docker instance. The files can then be found in /files on the instance, and locally on your computer in the path specified.
+
+```sh
+docker run -it -v '<replace with the location for your files>:/files' cplaisier/ccafv2_seurat5
 ```
 
 ### Installing ccAFv2
