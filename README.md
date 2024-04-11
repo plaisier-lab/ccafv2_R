@@ -202,7 +202,7 @@ DimPlot.ccAFv2(seurat_obj)
 ```
 The resulting DimPlot:
 
-![UMAP DimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2/figs/blob/main/ccAFv2_DimPlot.png?raw=true)
+![UMAP DimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot.png?raw=true)
 
 #### Plotting the impact of varying likelihood thresholds
 
