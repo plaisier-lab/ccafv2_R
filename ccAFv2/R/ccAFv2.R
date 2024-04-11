@@ -123,6 +123,6 @@ ThresholdPlot = function(seurat1, ...) {
         df1[,'Threshold'] = as.character(cutoff)
         dfall = rbind(dfall, df1)
     }
-    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
+    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
     return(tp1)
 }
