@@ -130,7 +130,23 @@ AAACGGCTGTCTAG-1 7.390769e-04 5.405837e-01 5.436572e-03 3.998061e-02 Neural G
 
 ### Plotting cell cycle states
 
+We provide plotting functions that colorize the cell cycle states in the way used in our manuscripts. We strongly suggest using these functions when plotting if possible.
 
+#### Plotting a UMAP with cell cycle states
+
+Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, exceptr for group.by and cols. Here is how the plotting function should be run:
+
+```r
+DimPlot.ccAFv2(seurat_obj)
+```
+
+#### Plotting the impact of varying likelihood thresholds
+
+Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, exceptr for group.by and cols. Here is how the plotting function should be run:
+
+```r
+DimPlot.ccAFv2(seurat_obj)
+```
 
 
 ### Cell cycle regression
