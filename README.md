@@ -7,6 +7,8 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 
 - [Install](#install)
 - [Classifying single cell or nuclei RNA-seq](#classifying-single-cell-or-nuclei-rna-seq)
+    - [Input for classification](#input-for-classification)
+    - [Test data](#test-data)
 	- [Cell cycle classification](#cell-cycle-classification)
 	- [Cell cycle likelihoods](#cell-cycle-classification)
     - [Plotting cell cycle states](#plotting-cell-cycle-states)
@@ -21,6 +23,26 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 - [Contributing](#contributing)
 
 ## Install
+
+### Requirements
+
+It is strongly suggested that users utilize the docker images we provide on DockerHub as they contain all dependencies needed to run ccAFv2.
+
+#### Dependencies
+
+These dependencies must be met to run ccAFv2 classification:
+
+- System dependencies:
+    - Tensorflow/Keras version 2 must be installed - [install link](https://www.tensorflow.org/install)
+- R dependencies:
+    - Seurat 4 or 5 - [install link](https://satijalab.org/seurat/articles/install_v5)
+    - keras - [install link](https://cran.r-project.org/web/packages/keras/vignettes/)
+
+#### Docker images
+
+We 
+
+### Installing ccAFv2
 
 The installation of ccAv2 in R requires the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package be install first. The devtools packace can be accomplished using the command:
 
@@ -41,12 +63,20 @@ devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
 It is expected that the input for the ccAFv2 classifier will be a Seurat object that has been thorougly quality controlled. We provide an example of our quality control pipeline in can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). Is is preferred that the data in the Seurat object be SCTransformed, however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
 accurate classification of the cell cycle. For this reason the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
 
+### Test data
+
+The U5 human neural stem cell (hNSC) dataset used to train the ccAFv2 is available for testing purposes here:
+- [U5 hNSCs rds file](https://zenodo.org/records/10961176/files/U5_normalized_ensembl.rds?download=1)
+
+Download this file and place it into the directory in which you wish to run the ccAFv2 tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
+
 ### Cell cycle classification
 
 Classification is as easy as two lines that can be added to any Seurat workflow. First the library must be loaded and then the PredictCellCycle function is run:
 
 ```r
 library(ccAFv2)
+
 seurat_obj = PredictCellCycle(seurat_obj)
 
 ```
