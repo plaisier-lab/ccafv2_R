@@ -252,7 +252,7 @@ Removing the cell cycle from the U5 hNSCs leads to a random distribution, becaus
 
 ### Test spatial data
 
-A slice of a human fetus 4 weeks post conception from [Zeng et al., 2023] (https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/geo/query/acc.cgi?acc=GSE155121) is available for testing purposes here:
+A slice of a human fetus 4 weeks post conception from [Zeng et al., 2023](https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/geo/query/acc.cgi?acc=GSE155121) is available for testing purposes here:
 - [Zeng et al., 2023 - 4 weeks post conception human fetus - slice 1](https://zenodo.org/records/10961633/files/GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds?download=1)
 
 Download this file and place it into the directory in which you wish to run the ccAFv2 spatial tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
