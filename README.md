@@ -163,7 +163,13 @@ PredictCellCycle(seurat_obj,
 
 ### Cell cycle classification results
 
-The results of the cell cycle classification is stored in the seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found int the 'ccAFv2'. Here is the first 10 rows of the U5-hNSC predictions:
+The results of the cell cycle classification is stored in the seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found int the 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
+
+```r
+head(seurat_obj@meta.data)
+```
+
+Which returns the following:
 
 ```
                  orig.ident       nCount_RNA nFeature_RNA percent.mito
