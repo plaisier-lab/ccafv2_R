@@ -316,7 +316,9 @@ Feel free to dive in! [Open an issue](https://github.com/plaisier-lab/ccAFv2_R/i
 ## Citation
 
 1. **Citation for ccAFv2 (version 2)**:
+
 > *Citation for ccAFv2 coming soon!*
 
 2. **Citation for ccAF (version 1)**:
+
 [Neural G0: a quiescent-like state found in neuroepithelial-derived cells and glioma.](https://doi.org/10.1101/446344) Samantha A. O'Connor, Heather M. Feldman, Chad M. Toledo, Sonali Arora, Pia Hoellerbauer, Philip Corrin, Lucas Carter, Megan Kufeld, Hamid Bolouri, Ryan Basom, Jeffrey Delrow, Jose L. McFaline-Figueroa, Cole Trapnell, Steven M. Pollard, Anoop Patel, Patrick J. Paddison, Christopher L. Plaisier. bioRxiv 446344; doi: [https://doi.org/10.1101/446344](https://doi.org/10.1101/446344)
