@@ -306,7 +306,9 @@ Below is a SpatialDimPlot for slice 1 of a human fetus at 4 weeks post-conceptio
 ![UMAP SpatialDimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_SpatialDimPlot_slice1.png?raw=true)
 
 ## Maintainers
+
 For issues or comments please contact:  [Chris Plaisier](mailto:plaisier@asu.edu)
+
 And for other great packages from the Plaisier Lab please check here:  [@plaisier-lab](https://github.com/plaisier-lab).
 
 ## Contributing
