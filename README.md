@@ -27,6 +27,7 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
     - [Plotting cell cycle states onto images](#plotting-cell-cycle-states-onto-images)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
+- [Citation](#citation)
 
 ## Install
 
@@ -305,9 +306,17 @@ Below is a SpatialDimPlot for slice 1 of a human fetus at 4 weeks post-conceptio
 ![UMAP SpatialDimPlot colorized with ccAFv2 cell cycle states](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_SpatialDimPlot_slice1.png?raw=true)
 
 ## Maintainers
-
-[@plaisier-lab](https://github.com/plaisier-lab).
+For issues or comments please contact:  [Chris Plaisier](mailto:plaisier@asu.edu)
+And for other great packages from the Plaisier Lab please check here:  [@plaisier-lab](https://github.com/plaisier-lab).
 
 ## Contributing
 
 Feel free to dive in! [Open an issue](https://github.com/plaisier-lab/ccAFv2_R/issues/new) or submit PRs.
+
+## Citation
+
+> - Citation for ccAFv2 (version 2):
+>   **Citation for ccAFv2 coming soon!**
+
+- Citation for ccAF (version 1):
+[Neural G0: a quiescent-like state found in neuroepithelial-derived cells and glioma.](https://doi.org/10.1101/446344) Samantha A. O'Connor, Heather M. Feldman, Chad M. Toledo, Sonali Arora, Pia Hoellerbauer, Philip Corrin, Lucas Carter, Megan Kufeld, Hamid Bolouri, Ryan Basom, Jeffrey Delrow, Jose L. McFaline-Figueroa, Cole Trapnell, Steven M. Pollard, Anoop Patel, Patrick J. Paddison, Christopher L. Plaisier. bioRxiv 446344; doi: [https://doi.org/10.1101/446344](https://doi.org/10.1101/446344)
