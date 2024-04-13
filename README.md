@@ -316,7 +316,7 @@ Feel free to dive in! [Open an issue](https://github.com/plaisier-lab/ccAFv2_R/i
 ## Citation
 
 > - **Citation for ccAFv2 (version 2)**:
-
+>
 >   *Citation for ccAFv2 coming soon!*
 
 - **Citation for ccAF (version 1)**:
