@@ -145,13 +145,13 @@ It is important to look at how many marker genes were present in the dataset. We
 
 There are several options that can be passed to the PredictCellCycle function:
 ```r
-PredictCellCycle(seurat_obj, 
-                 cutoff=0.5, 
+PredictCellCycle(seurat_obj,
+                 cutoff=0.5,
                  do_sctransform=TRUE,
                  assay='SCT',
                  species='human',
                  gene_id='ensembl',
-                 spatial = FALSE) 
+                 spatial = FALSE)
 ```
 - **seurat_obj**: a seurat object must be supplied to classify, no default
 - **cutoff**: the value used to threchold the likelihoods, default is 0.5
