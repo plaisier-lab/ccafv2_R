@@ -58,7 +58,7 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
     if(nrow(input_mat)<=689) {
         warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
-    }z
+    }
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
