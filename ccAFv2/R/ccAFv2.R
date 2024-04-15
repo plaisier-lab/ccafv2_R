@@ -44,7 +44,6 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
 
     # Subset data marker genes to marker genes included in classification
     sub_genes = intersect(row.names(seurat1),mgenes)
-    #seurat_subset = subset(seurat1, features = sub_genes)
 
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
