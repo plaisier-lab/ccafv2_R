@@ -44,23 +44,21 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
 
     # Subset data marker genes to marker genes included in classification
     sub_genes = intersect(row.names(seurat1),mgenes)
-    seurat_subset = subset(seurat1, features = sub_genes)
-    
+    #seurat_subset = subset(seurat1, features = sub_genes)
+
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
     if(assay=='SCT') {
-        missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@scale.data))
-        cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@scale.data),'\n'))
-        cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
-        ## Add ERROR later to warn if not enough marker genes ##
-        input_mat = seurat_subset[[assay]]@scale.data
+        input_mat = seurat1@assays$SCT@scale.data[sub_genes,]
     } else {
-        missing_genes = setdiff(mgenes, rownames(seurat_subset[[assay]]@data))
-        cat(paste0('    Marker genes present in this dataset: ', nrow(seurat_subset[[assay]]@data),'\n'))
-        cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
-        ## Add ERROR later to warn if not enough marker genes ##
-        input_mat = seurat_subset[[assay]]@data
+        input_mat = seurat1@assays$RNA@data[sub_genes,]
     }
+    missing_genes = setdiff(mgenes, rownames(input_mat))
+    cat(paste0('    Marker genes present in this dataset: ', nrow(input_mat),'\n'))
+    cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
+    if(nrow(input_mat)<=689) {
+        warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
+    }z
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
