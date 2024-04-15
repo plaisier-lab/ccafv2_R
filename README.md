@@ -1,7 +1,7 @@
 # ccAFv2: Cell cycle classifier for R and Seurat
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-This repository is for the R package for the cell cycle classifier ccAFv2. The input for the ccAFv2 classifier is single cell or nuclei, or spatial RNA-seq data.  The features of this classifier are that it classifies six cell cycle states (G1, Late G1, S, S/G2, G2/M, and M/Early G1) and a quiescent-like G0 state, and it incorporates a tunable parameter to filter out less certain classifications. This package is implemented in R so that it can be used in [Seurat](https://satijalab.org/seurat/) analysis workflows. We provide examples of how to install, run ccAFv2 on seurat objects (both sc/snRNA-seq and ST-RNA-seq), plot and use results, and regress out cell cycle effects if that is desired.
+This repository is for the R package for the cell cycle classifier ccAFv2. The input for the ccAFv2 classifier is single cell, nuclei, or spatial RNA-seq data.  The features of this classifier are that it classifies six cell cycle states (G1, Late G1, S, S/G2, G2/M, and M/Early G1) and a quiescent-like G0 state, and it incorporates a tunable parameter to filter out less certain classifications. This package is implemented in R so that it can be used in [Seurat](https://satijalab.org/seurat/) analysis workflows. We provide examples of how to install, run ccAFv2 on seurat objects (both sc/snRNA-seq and ST-RNA-seq), plot and use results, and regress out cell cycle effects if that is desired.
 
 ## Table of Contents
 
@@ -47,7 +47,7 @@ These dependencies must be met to run ccAFv2 classification:
 
 #### Dockerfile
 
-We provide a Dockerfile that install all the dependencies needed to run ccAFv2 so that it can be merged with a users Dockerfile.
+We provide a Dockerfile that installs all the dependencies needed to run ccAFv2 so that it can be merged with a users Dockerfile.
 
 - [Dockerfile](https://github.com/plaisier-lab/ccafv2_R/blob/main/Dockerfile)
 
@@ -88,9 +88,9 @@ docker run -it -v '<replace with the location for your files>:/files' cplaisier/
 
 ### Installing ccAFv2
 
-> **NOTE**: The Docker images already have ccAFv2 installed, and this both of these commands are unnecessary if you use the Docker images.
+> **NOTE**: The Docker images already have ccAFv2 installed, and both of these commands are unnecessary if you use the Docker images.
 
-Once the depnencies are met ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which muse be installed first. The devtools packace can be installed using the command:
+Once the dependencies are met ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which muse be installed first. The devtools package can be installed using the command:
 
 ```r
 install.packages('devtools')
@@ -106,7 +106,7 @@ devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
 
 ### Input for classification
 
-It is expected that the input for the ccAFv2 classifier will be a Seurat object that has been thorougly quality controlled. We provide an example of our quality control pipeline in can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). Is is preferred that the data in the Seurat object be SCTransformed, however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
+It is expected that the input for the ccAFv2 classifier will be a Seurat object that has been thorougly quality controlled. We provide an example of our quality control pipeline. It can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). Is is preferred that the data in the Seurat object be SCTransformed; however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
 accurate classification of the cell cycle. For this reason the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
 
 ### Test data
@@ -141,7 +141,7 @@ Running ccAFv2:
 Done
 ```
 
-It is important to look at how many marker genes were present in the dataset. We found that when less than 689 marker genes (or 80%) were found in the dataset that this led significantly less accurate predictions. Using the default 'do_sctransform' paramter setting of TRUE should yeild the largest possible overlap with the marker genes. And some of the later values for the timing and 93/93 may differ for your dataset, which is perfectly fine.
+It is important to look at how many marker genes were present in the dataset. We found that when less than 689 marker genes (or 80%) were found in the dataset that this led to significantly less accurate predictions. Using the default 'do_sctransform' parameter setting of TRUE should yeild the largest possible overlap with the marker genes. And some of the later values for the timing and 93/93 may differ for your dataset, which is perfectly fine.
 
 There are several options that can be passed to the PredictCellCycle function:
 ```r
@@ -154,9 +154,9 @@ PredictCellCycle(seurat_obj,
                  spatial = FALSE)
 ```
 - **seurat_obj**: a seurat object must be supplied to classify, no default
-- **cutoff**: the value used to threchold the likelihoods, default is 0.5
+- **cutoff**: the value used to threshold the likelihoods, default is 0.5
 - **do_sctransform**: whether to do SCTransform before classifying, default is TRUE
-- **assay**: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+- **assay**: which seurat_obj assay to use for classification, helpful if data is pre-normalized, default is 'SCT'
 - **species**: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
 - **gene_id**: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
 - **spatial**: whether the data is spatial, defaults to FALSE
@@ -164,7 +164,7 @@ PredictCellCycle(seurat_obj,
 
 ### Cell cycle classification results
 
-The results of the cell cycle classification is stored in the seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in the 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
+The results of the cell cycle classification are stored in the seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
 
 ```r
 head(seurat_obj@meta.data)
@@ -227,7 +227,7 @@ Below is a DimPlot for U5 hNSCs colorized using the cell cycle states. The expec
 
 #### Plotting the impact of varying likelihood thresholds
 
-For certain datasets it may be necessary to adjust the likelihood threshold. We provide a plot that can make this process easier. The ThresholdPlot plots the relative proportions of cell cycle states across a range or likelihood thresholds from 0 to 0.9 by intervals of 0.1.
+For certain datasets it may be necessary to adjust the likelihood threshold. We provide a plot that can make this process easier. The ThresholdPlot plots the relative proportions of cell cycle states across a range of likelihood thresholds from 0 to 0.9 by intervals of 0.1.
 
 ```r
 pdf('ccAFv2_ThresholdPlot.pdf')
@@ -235,13 +235,13 @@ ThresholdPlot(seurat_obj)
 dev.off()
 ```
 
-Likelihood thersholds are on the x-axis and relative proportions of cell cycle states are on the y-axis. As can be seen as the likelihood thresholds increase the number of 'Unknown' cells increases.
+Likelihood thresholds are on the x-axis and relative proportions of cell cycle states are on the y-axis, as can be seen as the likelihood thresholds increase the number of 'Unknown' cells increases.
 
 ![Bar plot colorized with ccAFv2 cell cycle states acorss varios thresholds](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_ThresholdPlot.png?raw=true)
 
 ### Cell cycle regression
 
-The cell cycle imposes a strong biological signal on cell expression patterns. Thus it has become a common practice to regress the cell cycle expression out of cells expression, and then use the residual variance for further studies. We provide functionality to do this using the ccAFv2 marker genes.
+The cell cycle imposes a strong biological signal on cell expression patterns. Thus, it has become a common practice to regress the cell cycle expression out of cells expression, and then use the residual variance for further studies. We provide functionality to do this using the ccAFv2 marker genes.
 
 First, we collect expression module scores for the cell cycle states Late G1, S, S/G2, G2/M, and M/Early G1.
 
@@ -265,7 +265,7 @@ DimPlot.ccAFv2(seurat_obj)
 dev.off()
 ```
 
-Removing the cell cycle from the U5 hNSCs leads to a random distribution, because the cell cycle is the primary biological signal in these *in vitro* grown cell line.
+Removing the cell cycle from the U5 hNSCs leads to a random distribution, because the cell cycle is the primary biological signal in this *in vitro* grown cell line.
 
 ![UMAP DimPlot colorized with ccAFv2 cell cycle states after regressing out cell cycle](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot_regressed.png?raw=true)
 
@@ -324,3 +324,4 @@ Feel free to dive in! [Open an issue](https://github.com/plaisier-lab/ccAFv2_R/i
 2. **Citation for ccAF (version 1)**:
 
 [Neural G0: a quiescent-like state found in neuroepithelial-derived cells and glioma.](https://doi.org/10.1101/446344) Samantha A. O'Connor, Heather M. Feldman, Chad M. Toledo, Sonali Arora, Pia Hoellerbauer, Philip Corrin, Lucas Carter, Megan Kufeld, Hamid Bolouri, Ryan Basom, Jeffrey Delrow, Jose L. McFaline-Figueroa, Cole Trapnell, Steven M. Pollard, Anoop Patel, Patrick J. Paddison, Christopher L. Plaisier. bioRxiv 446344; doi: [https://doi.org/10.1101/446344](https://doi.org/10.1101/446344)
+
