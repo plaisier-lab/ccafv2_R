@@ -62,7 +62,7 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
     tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
     rownames(tmp) = missing_genes
-    colnames(tmp) = colnames(seurat_subset)
+    colnames(tmp) = colnames(input_mat)
     input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
     input_mat_scaled_add_missing_genes[!is.finite(input_mat_scaled_add_missing_genes)] = 0
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
