@@ -74,7 +74,7 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
-    cat('  Adding probabilitities and predictions to metadata\n')
+    cat('  Adding probabilities and predictions to metadata\n')
     seurat_obj = AddMetaData(object = seurat_obj, metadata = df1)
     cat('Done\n')
     return(seurat_obj)
