@@ -1,7 +1,7 @@
 # ccAFv2: Cell cycle classifier for R and Seurat
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-This repository is for the R package for the cell cycle classifier ccAFv2. The input for the ccAFv2 classifier is single cell, nuclei, or spatial RNA-seq data.  The features of this classifier are that it classifies six cell cycle states (G1, Late G1, S, S/G2, G2/M, and M/Early G1) and a quiescent-like G0 state, and it incorporates a tunable parameter to filter out less certain classifications. This package is implemented in R so that it can be used in [Seurat](https://satijalab.org/seurat/) analysis workflows. We provide examples of how to install, run ccAFv2 on seurat objects (both sc/snRNA-seq and ST-RNA-seq), plot and use results, and regress out cell cycle effects if that is desired.
+This repository is for the R package for the cell cycle classifier ccAFv2. The input for the ccAFv2 classifier is single cell, nuclei, or spatial RNA-seq data.  The features of this classifier are that it classifies six cell cycle states (G1, Late G1, S, S/G2, G2/M, and M/Early G1) and a quiescent-like G0 state, and it incorporates a tunable parameter to filter out less certain classifications. This package is implemented in R for use in [Seurat](https://satijalab.org/seurat/) analysis workflows. We provide examples of installing and running ccAFv2 on Seurat objects (both sc/snRNA-seq and ST-RNA-seq), plot and use results, and regress out cell cycle effects if desired.
 
 ## Table of Contents
 
@@ -47,13 +47,13 @@ These dependencies must be met to run ccAFv2 classification:
 
 #### Dockerfile
 
-We provide a Dockerfile that installs all the dependencies needed to run ccAFv2 so that it can be merged with a users Dockerfile.
+We provide a Dockerfile that installs all the dependencies needed to run ccAFv2 so that it can be merged with a user's Dockerfile.
 
 - [Dockerfile](https://github.com/plaisier-lab/ccafv2_R/blob/main/Dockerfile)
 
 #### Docker images
 
-We also provide fully compiled Docker images on DockerHub for ease of use. We provide two versions that provide users options as to which version of Seurat they are using (4.X and 5.X).
+We also provide fully compiled Docker images on DockerHub for ease of use. We provide two versions that provide users options as to which version of Seurat they use (4.X and 5.X).
 
 ##### Seurat 4.X version
 
@@ -65,7 +65,7 @@ Command to pull the image down:
 docker pull cplaisier/ccafv2_seurat4
 ```
 
-Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want mounted onto the docker instance. The files can then be found in /files on the instance, and locally on your computer in the path specified.
+Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want to be mounted onto the docker instance. The files can then be found in /files on the instance and locally on your computer in the path specified.
 
 ```sh
 docker run -it -v '<replace with the location for your files>:/files' cplaisier/ccafv2_seurat4
@@ -80,7 +80,7 @@ Command to pull the image down:
 ```
 docker pull cplaisier/ccafv2_seurat5
 ```
-Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want mounted onto the docker instance. The files can then be found in /files on the instance, and locally on your computer in the path specified.
+Command to run the docker image. Note that the <replace with the location to your files> should be replaced with the path to your files that you want to be mounted onto the docker instance. The files can then be found in /files on the instance and locally on your computer in the path specified.
 
 ```sh
 docker run -it -v '<replace with the location for your files>:/files' cplaisier/ccafv2_seurat5
@@ -88,15 +88,15 @@ docker run -it -v '<replace with the location for your files>:/files' cplaisier/
 
 ### Installing ccAFv2
 
-> **NOTE**: The Docker images already have ccAFv2 installed, and both of these commands are unnecessary if you use the Docker images.
+> **NOTE**: The Docker images already have ccAFv2 installed, so both of these commands are unnecessary if you use them.
 
-Once the dependencies are met ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which muse be installed first. The devtools package can be installed using the command:
+Once the dependencies are met, ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which must be installed first. The devtools package can be installed using the command:
 
 ```r
 install.packages('devtools')
 ```
 
-Once the devtools package is installed it can then be used to install the ccAFv2 R package from this github repository using the following command:
+Once the devtools package is installed, it can then be used to install the ccAFv2 R package from this GitHub repository using the following command:
 
 ```r
 devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
@@ -106,26 +106,26 @@ devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
 
 ### Input for classification
 
-It is expected that the input for the ccAFv2 classifier will be a Seurat object that has been thorougly quality controlled. We provide an example of our quality control pipeline. It can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). Is is preferred that the data in the Seurat object be SCTransformed; however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
-accurate classification of the cell cycle. For this reason the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
+The input for the ccAFv2 classifier is expected to be a Seurat object that has been thoroughly quality-controlled. We provide an example of our quality control pipeline. It can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). The data in the Seurat object is preferred to be SCTransformed; however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
+accurate classification of the cell cycle. For this reason, the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
 
 ### Test data
 
 The U5 human neural stem cell (hNSC) dataset used to train the ccAFv2 is available for testing purposes here:
 - [U5 hNSCs rds file](https://zenodo.org/records/10961633/files/U5_normalized_ensembl.rds?download=1)
 
-Download this file and place it into the directory in which you wish to run the ccAFv2 tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
+Download this file and place it in the directory where you wish to run the ccAFv2 tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
 
 ### Cell cycle classification
 
-Classification is as easy as two lines that can be added to any Seurat workflow. First the library must be loaded and then the PredictCellCycle function is run:
+Classification is as easy as adding two lines to any Seurat workflow. First, the library must be loaded, and then the PredictCellCycle function is run:
 
 ```r
 library(ccAFv2)
 seurat_obj = readRDS('U5_normalized_ensembl.rds')
 seurat_obj = PredictCellCycle(seurat_obj)
 ```
-When the classifier is running it should look something like this:
+When the classifier is running, it should look something like this:
 
 ```r
 Running ccAFv2:
@@ -137,13 +137,13 @@ Running ccAFv2:
 93/93 [==============================] - 1s 4ms/step
 93/93 [==============================] - 1s 4ms/step
  Choosing cell cycle state...
- Adding probabilitities and predictions to metadata
+ Adding probabilities and predictions to metadata
 Done
 ```
 
-It is important to look at how many marker genes were present in the dataset. We found that when less than 689 marker genes (or 80%) were found in the dataset that this led to significantly less accurate predictions. Using the default 'do_sctransform' parameter setting of TRUE should yeild the largest possible overlap with the marker genes. And some of the later values for the timing and 93/93 may differ for your dataset, which is perfectly fine.
+Examining the number of marker genes present in the dataset is important. We found that when less than 689 marker genes (or 80%) were found in the dataset, this led to significantly less accurate predictions. Using the default 'do_sctransform' parameter setting of TRUE should yield the largest possible overlap with the marker genes. Some of the later values for the timing and 93/93 may differ for your dataset, which is perfectly fine.
 
-There are several options that can be passed to the PredictCellCycle function:
+Several options can be passed to the PredictCellCycle function:
 ```r
 PredictCellCycle(seurat_obj,
                  cutoff=0.5,
@@ -164,7 +164,7 @@ PredictCellCycle(seurat_obj,
 
 ### Cell cycle classification results
 
-The results of the cell cycle classification are stored in the seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
+The results of the cell cycle classification are stored in the Seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
 
 ```r
 head(seurat_obj@meta.data)
@@ -214,7 +214,7 @@ We provide plotting functions that colorize the cell cycle states in the way use
 
 #### Plotting a UMAP with cell cycle states
 
-Plotting cells using ther first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
+Plotting cells using the first two dimensions from a dimensionality reduction method (e.g., PCA, tSNE, or UMAP) is a common way to represent single-cell or nuclei RNA-seq data. We have an overloaded DimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that DimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
 
 ```r
 pdf('ccAFv2_DimPlot.pdf')
@@ -227,7 +227,7 @@ Below is a DimPlot for U5 hNSCs colorized using the cell cycle states. The expec
 
 #### Plotting the impact of varying likelihood thresholds
 
-For certain datasets it may be necessary to adjust the likelihood threshold. We provide a plot that can make this process easier. The ThresholdPlot plots the relative proportions of cell cycle states across a range of likelihood thresholds from 0 to 0.9 by intervals of 0.1.
+For certain datasets, adjusting the likelihood threshold may be necessary. We provide a plot that can make this process easier. The ThresholdPlot plots the relative proportions of cell cycle states across a range of likelihood thresholds from 0 to 0.9 with intervals of 0.1.
 
 ```r
 pdf('ccAFv2_ThresholdPlot.pdf')
@@ -235,13 +235,13 @@ ThresholdPlot(seurat_obj)
 dev.off()
 ```
 
-Likelihood thresholds are on the x-axis and relative proportions of cell cycle states are on the y-axis, as can be seen as the likelihood thresholds increase the number of 'Unknown' cells increases.
+Likelihood thresholds are on the x-axis, and relative proportions of cell cycle states are on the y-axis. As the likelihood thresholds increase, the number of 'Unknown' cells increases.
 
 ![Bar plot colorized with ccAFv2 cell cycle states acorss varios thresholds](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_ThresholdPlot.png?raw=true)
 
 ### Cell cycle regression
 
-The cell cycle imposes a strong biological signal on cell expression patterns. Thus, it has become a common practice to regress the cell cycle expression out of cells expression, and then use the residual variance for further studies. We provide functionality to do this using the ccAFv2 marker genes.
+The cell cycle imposes a strong biological signal on cell expression patterns. Thus, it has become a common practice to regress cell cycle expression out of cell expression and then use the residual variance for further studies. We provide functionality to do this using the ccAFv2 marker genes.
 
 First, we collect expression module scores for the cell cycle states Late G1, S, S/G2, G2/M, and M/Early G1.
 
@@ -249,13 +249,13 @@ First, we collect expression module scores for the cell cycle states Late G1, S,
 seurat_obj = PrepareForCellCycleRegression(seurat_obj)
 ```
 
-Then we regress these signatures out of the expression data:
+Then, we regress these signatures out of the expression data:
 
 ```r
 seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
 ```
 
-And finally to plot the effect of regressing out the cell cycle on the UMAP:
+And finally, to plot the effect of regressing out the cell cycle on the UMAP:
 
 ```r
 seurat_obj = RunPCA(seurat_obj)
@@ -265,7 +265,7 @@ DimPlot.ccAFv2(seurat_obj)
 dev.off()
 ```
 
-Removing the cell cycle from the U5 hNSCs leads to a random distribution, because the cell cycle is the primary biological signal in this *in vitro* grown cell line.
+Removing the cell cycle from the U5 hNSCs leads to a random distribution because the cell cycle is the primary biological signal in this in vitro-grown cell line.
 
 ![UMAP DimPlot colorized with ccAFv2 cell cycle states after regressing out cell cycle](https://github.com/plaisier-lab/ccAFv2_R/blob/main/figs/ccAFv2_DimPlot_regressed.png?raw=true)
 
@@ -277,24 +277,24 @@ Removing the cell cycle from the U5 hNSCs leads to a random distribution, becaus
 A slice of a human fetus 4 weeks post conception from [Zeng et al., 2023](https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/geo/query/acc.cgi?acc=GSE155121) is available for testing purposes here:
 - [Zeng et al., 2023 - 4 weeks post conception human fetus - slice 1](https://zenodo.org/records/10961633/files/GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds?download=1)
 
-Download this file and place it into the directory in which you wish to run the ccAFv2 spatial tutorial below. This data has been QC'd and normalized using SCTransform following our best practices described above.
+Download this file and place it in the directory where you wish to run the ccAFv2 spatial tutorial below. This data has been QC'd and normalized using SCTransform, following our best practices described above.
 
 ### Cell cycle classification
 
-Classification is as easy as two lines that can be added to any Seurat workflow. First the library must be loaded and then the PredictCellCycle function is run:
+Classification is as easy as adding two lines to any Seurat workflow. First, the library must be loaded, and then the PredictCellCycle function is run:
 
 ```r
 library(ccAFv2)
 spatial_obj = readRDS('GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds')
 spatial_obj = PredictCellCycle(spatial_obj, species='human', gene_id='symbol', spatial=TRUE)
 ```
-When the classifier is running it should look something like this:
+When the classifier is running, it should look something like this:
 
-For details about expected output please see classifying cells and nuclei above.
+For details about expected output, please see classifying cells and nuclei above.
 
 ### Plotting cell cycle states onto images
 
-Plotting cell cycle states onto the images taken of the tissue slices before spatial RNA-seq is a common way to represent spatial RNA-seq data. We have an overloaded SpatialDimPlot function that colorizes the cells based on their called cell cycle state. The function accepts all the parameters that SpatialDimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
+Plotting cell cycle states onto the images taken of the tissue slices before spatial RNA-seq is a common way to represent spatial RNA-seq data. We have an overloaded SpatialDimPlot function that colorizes the cells based on their cell cycle state. The function accepts all the parameters that SpatialDimPlot can accept, except for group.by and cols. Here is how the plotting function should be run:
 
 ```r
 pdf('ccAFv2_SpatialDimPlot_slice1.pdf')
@@ -307,9 +307,9 @@ Below is a SpatialDimPlot for slice 1 of a human fetus at 4 weeks post-conceptio
 
 ## Maintainers
 
-For issues or comments please contact:  [Chris Plaisier](mailto:plaisier@asu.edu)
+For issues or comments, please contact:  [Chris Plaisier](mailto:plaisier@asu.edu)
 
-And for other great packages from the Plaisier Lab please check here:  [@plaisier-lab](https://github.com/plaisier-lab).
+For other great packages from the Plaisier Lab, please check here: [@plaisier-lab](https://github.com/plaisier-lab).
 
 ## Contributing
 
