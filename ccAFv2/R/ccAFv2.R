@@ -142,6 +142,7 @@ ThresholdPlot = function(seurat_obj, ...) {
     dfall[,'Threshold'] = 0
     for(cutoff in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+        colnames(CellCycleState) = 'ccAFv2'
         CellCycleState[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
         df1 = data.frame(table(CellCycleState)/nrow(CellCycleState))
         df1[,'Threshold'] = as.character(cutoff)
