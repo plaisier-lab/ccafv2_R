@@ -164,7 +164,7 @@ PredictCellCycle(seurat_obj,
 
 ### Cell cycle classification results
 
-The results of the cell cycle classification are stored in the Seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
+The results of the cell cycle classification are stored in the Seurat object metadata. The likelihoods for each cell cycle state can be found with the labels of each cell cycle state ('qG0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', and 'M.Early.G1') and the classification for each cell can be found in 'ccAFv2'. Here are the first 10 rows of the U5-hNSC predictions:
 
 ```r
 head(seurat_obj@meta.data)
@@ -195,17 +195,17 @@ AAACGCACCTTCTA-1 5537       1308         4.707390e-06 3.709571e-08 6.463646e-05
 AAACGCTGGTATGC-1 5954       2127         2.741130e-01 2.113478e-05 7.243306e-01
 AAACGCTGTGCTGA-1 6666       2780         1.320201e-04 2.646190e-07 1.700663e-06
 AAACGGCTGTCTAG-1 5568       1608         3.885373e-01 3.646265e-03 2.107647e-02
-                 M.Early.G1   Neural.G0    S            S.G2         ccAFv2
-AAACATACTAACCG-1 4.220059e-05 9.585268e-01 5.953405e-05 4.332590e-05 Neural G0
-AAACATTGAGTTCG-1 8.592179e-10 9.998107e-01 1.868801e-04 1.347080e-06 Neural G0
+                 M.Early.G1   qG0          S            S.G2         ccAFv2
+AAACATACTAACCG-1 4.220059e-05 9.585268e-01 5.953405e-05 4.332590e-05 qG0
+AAACATTGAGTTCG-1 8.592179e-10 9.998107e-01 1.868801e-04 1.347080e-06 qG0
 AAACATTGCACTGA-1 4.317539e-09 1.362584e-06 6.708771e-07 9.998415e-01 S/G2
 AAACATTGCTCAGA-1 6.309561e-01 5.861283e-02 4.330526e-03 4.470748e-02 M/Early G1
 AAACATTGGTTTCT-1 2.112151e-05 1.050980e-03 1.899571e-01 8.176555e-02 G1
 AAACCGTGTAACGC-1 1.919447e-18 3.083377e-16 6.074685e-23 1.652127e-15 G2/M
 AAACGCACCTTCTA-1 4.957183e-07 9.401034e-07 9.998928e-01 3.640788e-05 S
 AAACGCTGGTATGC-1 7.537001e-06 3.954049e-04 9.016516e-04 2.307067e-04 Late G1
-AAACGCTGTGCTGA-1 1.102674e-08 9.998627e-01 2.419535e-06 1.108445e-06 Neural G0
-AAACGGCTGTCTAG-1 7.390769e-04 5.405837e-01 5.436572e-03 3.998061e-02 Neural G
+AAACGCTGTGCTGA-1 1.102674e-08 9.998627e-01 2.419535e-06 1.108445e-06 qG0
+AAACGGCTGTCTAG-1 7.390769e-04 5.405837e-01 5.436572e-03 3.998061e-02 qG0
 ```
 
 ### Plotting cell cycle states

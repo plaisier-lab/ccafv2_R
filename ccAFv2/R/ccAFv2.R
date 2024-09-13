@@ -2,7 +2,7 @@
 #'
 #' This function predicts the cell cycle state for each cell in the object
 #' using the ccAFv2 cell cycle classifier. The possible cell cycle states that
-#' ccAFv2 can predict are: Neural G0, G1, G1/other, Late G1, S, S/G2, G2/M,
+#' ccAFv2 can predict are: qG0, G1, G1/other, Late G1, S, S/G2, G2/M,
 #' and M/Early G1.
 #'
 #' The ccAFv2 predicts the cell cycle state for each cell in the object by
@@ -70,7 +70,7 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
     cat(paste0('  Choosing cell cycle state...\n'))
-    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
     df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
@@ -110,7 +110,7 @@ PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human
 #' @return A DimPlot object that can be plotted.
 #' @export
 DimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'qG0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
 
@@ -122,7 +122,7 @@ DimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @return A DimPlot object that can be plotted.
 #' @export
 SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
+    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'qG0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092'), ...)
     return(dp1)
 }
 
@@ -135,19 +135,19 @@ SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @return A ggplot object that can be plotted.
 #' @export
 ThresholdPlot = function(seurat_obj, ...) {
-    predictions1 = seurat_obj@meta.data[,c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
-    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+    predictions1 = seurat_obj@meta.data[,c('qG0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     dfall = data.frame(table(CellCycleState)/nrow(CellCycleState))
     dfall[,'Threshold'] = 0
     for(cutoff in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
-        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
         colnames(CellCycleState) = 'ccAFv2'
         CellCycleState[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
         df1 = data.frame(table(CellCycleState)/nrow(CellCycleState))
         df1[,'Threshold'] = as.character(cutoff)
         dfall = rbind(dfall, df1)
     }
-    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = CellCycleState), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
+    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = CellCycleState), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'qG0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
     return(tp1)
 }

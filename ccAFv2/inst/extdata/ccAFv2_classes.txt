@@ -2,6 +2,6 @@ G1
 G2/M
 Late G1
 M/Early G1
-Neural G0
+qG0
 S
 S/G2
