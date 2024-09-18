@@ -92,8 +92,9 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
 #' @export
 AdjustCellCycleThreshold = function(seurat_obj, cutoff=0.5) {
     cat('Adjusting threshold:\n')
-    classes = make.names(read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1)
-    predictions1 = seurat_obj@meta.data[,classes]
+    classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
+    predictions1 = seurat_obj@meta.data[,make.names(classes)]
+    colnames(predictions1) = classes
     df1 = data.frame(predictions1)
     CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
