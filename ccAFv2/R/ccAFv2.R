@@ -8,13 +8,13 @@
 #' The ccAFv2 predicts the cell cycle state for each cell in the object by
 #' selecting the cell cycle state for each cell with the maximum cell cycle
 #' state probability. If the cell cycle state probability for a cell does not
-#' meet the probability cutoff, the cell will receive an 'Unknown' cell cycle
+#' meet the probability threshold, the cell will receive an 'Unknown' cell cycle
 #' state prediction. ccAFv2 cell cycle state predictions and probabilities for
 #' each cell in the object will be stored in the object .obs after classification.
 #'
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param cutoff: the value used to threchold the likelihoods, default is 0.5
+#' @param threshold: the value used to threchold the likelihoods, default is 0.5
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
@@ -22,7 +22,7 @@
 #' @param spatial: whether the data is spatial, defaults to FALSE
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, threshold=0.5, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj
@@ -73,7 +73,7 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
-    df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
+    df1[which(apply(predictions1,1,max)<threshold),'ccAFv2'] = 'Unknown'
     cat('  Adding probabilities and predictions to metadata\n')
     seurat_obj = AddMetaData(object = seurat_obj, metadata = df1)
     cat('Done\n')
@@ -87,10 +87,10 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
 #' values have on the number of 'Unknown' cell calls.
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param cutoff: the value used to threchold the likelihoods, default is 0.5
+#' @param threshold: the value used to threchold the likelihoods, default is 0.5
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-AdjustCellCycleThreshold = function(seurat_obj, cutoff=0.5) {
+AdjustCellCycleThreshold = function(seurat_obj, threshold=0.5) {
     cat('Adjusting threshold:\n')
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     predictions1 = seurat_obj@meta.data[,make.names(classes)]
@@ -99,7 +99,7 @@ AdjustCellCycleThreshold = function(seurat_obj, cutoff=0.5) {
     CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
-    df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
+    df1[which(apply(predictions1,1,max)<threshold),'ccAFv2'] = 'Unknown'
     seurat_obj$ccAFv2 = df1[,'ccAFv2']
     cat('Done\n')
     return(seurat_obj)
@@ -165,12 +165,12 @@ ThresholdPlot = function(seurat_obj, ...) {
     colnames(CellCycleState) = 'ccAFv2'
     dfall = data.frame(table(CellCycleState)/nrow(CellCycleState))
     dfall[,'Threshold'] = 0
-    for(cutoff in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
+    for(threshold in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
         colnames(CellCycleState) = 'ccAFv2'
-        CellCycleState[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
+        CellCycleState[which(apply(predictions1,1,max)<threshold),'ccAFv2'] = 'Unknown'
         df1 = data.frame(table(CellCycleState)/nrow(CellCycleState))
-        df1[,'Threshold'] = as.character(cutoff)
+        df1[,'Threshold'] = as.character(threshold)
         dfall = rbind(dfall, df1)
     }
     tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = CellCycleState), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'qG0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC')) + ggplot2::theme_minimal()
