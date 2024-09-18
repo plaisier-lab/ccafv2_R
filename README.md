@@ -146,7 +146,7 @@ Examining the number of marker genes present in the dataset is important. We fou
 Several options can be passed to the PredictCellCycle function:
 ```r
 PredictCellCycle(seurat_obj,
-                 cutoff=0.5,
+                 threshold=0.5,
                  do_sctransform=TRUE,
                  assay='SCT',
                  species='human',
@@ -154,7 +154,7 @@ PredictCellCycle(seurat_obj,
                  spatial = FALSE)
 ```
 - **seurat_obj**: a seurat object must be supplied to classify, no default
-- **cutoff**: the value used to threshold the likelihoods, default is 0.5
+- **threshold**: the value used to threshold the likelihoods, default is 0.5
 - **do_sctransform**: whether to do SCTransform before classifying, default is TRUE
 - **assay**: which seurat_obj assay to use for classification, helpful if data is pre-normalized, default is 'SCT'
 - **species**: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'

@@ -27,7 +27,7 @@ ThresholdPlot(seurat_obj)
 dev.off()
 
 # Adjust ccAFv2 threshold to 0.9
-seurat_obj = AdjustCellCycleThreshold(seurat_obj, cutoff=0.9)
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, threshold=0.9)
 
 # Plot DimPlot colorized by cell cycle states
 pdf('ccAFv2_DimPlot_T_0.9.pdf')
@@ -35,7 +35,7 @@ DimPlot.ccAFv2(seurat_obj)
 dev.off()
 
 # Adjust ccAFv2 threshold back to 0.5
-seurat_obj = AdjustCellCycleThreshold(seurat_obj, cutoff=0.5)
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, threshold=0.5)
 
 # Plot DimPlot colorized by cell cycle states
 pdf('ccAFv2_DimPlot_T_0.5.pdf')
