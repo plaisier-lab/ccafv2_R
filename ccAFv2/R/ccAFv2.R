@@ -80,6 +80,29 @@ PredictCellCycle = function(seurat_obj, cutoff=0.5, do_sctransform=TRUE, assay='
     return(seurat_obj)
 }
 
+#' Adjust Cell Cycle Threshold
+#'
+#' This function allows users to adjust the threshold applied to ccAFv2 predictions.
+#' The user can utilize the ThresholdPlot to see the effect of increasing threshold
+#' values have on the number of 'Unknown' cell calls.
+#'
+#' @param seurat0: a seurat object must be supplied to classify, no default
+#' @param cutoff: the value used to threchold the likelihoods, default is 0.5
+#' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
+#' @export
+AdjustCellCycleThreshold = function(seurat_obj, cutoff=0.5) {
+    cat('Adjusting threshold:\n')
+    predictions1 = seurat_obj@meta.data[,classes]
+    df1 = data.frame(predictions1)
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('qG0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+    colnames(CellCycleState) = 'ccAFv2'
+    df1[,'ccAFv2'] = CellCycleState$ccAFv2
+    df1[which(apply(predictions1,1,max)<cutoff),'ccAFv2'] = 'Unknown'
+    seurat_obj$ccAFv2 = df1[,'ccAFv2']
+    cat('Done\n')
+    return(seurat_obj)
+}
+
 #' Prepare expression module scores for regressing out the cell cycle
 #'
 #' This function computes moduel scores for each cell cycle state
