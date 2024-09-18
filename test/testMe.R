@@ -26,6 +26,22 @@ pdf('ccAFv2_ThresholdPlot.pdf')
 ThresholdPlot(seurat_obj)
 dev.off()
 
+# Adjust ccAFv2 threshold to 0.9
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, cutoff=0.9)
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_DimPlot_T_0.9.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
+# Adjust ccAFv2 threshold back to 0.5
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, cutoff=0.5)
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_DimPlot_T_0.5.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
 # Regress out cell cycle
 seurat_obj = PrepareForCellCycleRegression(seurat_obj)
 seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
