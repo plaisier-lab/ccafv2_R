@@ -319,7 +319,7 @@ Feel free to dive in! [Open an issue](https://github.com/plaisier-lab/ccAFv2_R/i
 
 1. **Citation for ccAFv2 (version 2)**:
 
-> *Citation for ccAFv2 coming soon!*
+[Classifying cell cycle states and a quiescent-like G0 state using single-cell transcriptomics](https://doi.org/10.1101/2024.04.16.589816) Samantha A. O’Connor, Leonor Garcia, Anoop P. Patel, Benjamin B. Bartelle, Jean-Philippe Hugnot, Patrick J. Paddison, Christopher L. Plaisier. bioRxiv [Preprint]. 2024 Apr 20:2024.04.16.589816. doi: [10.1101/2024.04.16.589816](https://doi.org/10.1101/2024.04.16.589816)). PMID: [38659838](https://pubmed.ncbi.nlm.nih.gov/38659838/) 
 
 2. **Citation for ccAF (version 1)**:
 
