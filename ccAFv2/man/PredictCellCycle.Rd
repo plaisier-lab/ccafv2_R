@@ -4,16 +4,45 @@
 \alias{PredictCellCycle}
 \title{Predict Cell Cycle}
 \usage{
-PredictCellCycle(seurat1, cutoff = 0.5)
+PredictCellCycle(
+  seurat_obj,
+  threshold = 0.5,
+  do_sctransform = TRUE,
+  assay = "SCT",
+  species = "human",
+  gene_id = "ensembl",
+  spatial = FALSE
+)
 }
 \arguments{
-\item{Seurat}{object that should have ccAFv2 cell cycle states predicted.}
+\item{seurat0:}{a seurat object must be supplied to classify, no default}
+
+\item{threshold:}{the value used to threchold the likelihoods, default is 0.5}
+
+\item{do_sctransform:}{whether to do SCTransform before classifying, default is TRUE}
+
+\item{assay:}{which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'}
+
+\item{species:}{from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'}
+
+\item{gene_id:}{what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'}
+
+\item{spatial:}{whether the data is spatial, defaults to FALSE}
 }
 \value{
-Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 }
 \description{
 This function predicts the cell cycle state for each cell in the object
-using the ccAFv2 cell cycle classifier. \link{Which cell cycle states/phases}
-\link{How to interpret data}
+using the ccAFv2 cell cycle classifier. The possible cell cycle states that
+ccAFv2 can predict are: qG0, G1, G1/other, Late G1, S, S/G2, G2/M,
+and M/Early G1.
+}
+\details{
+The ccAFv2 predicts the cell cycle state for each cell in the object by
+selecting the cell cycle state for each cell with the maximum cell cycle
+state probability. If the cell cycle state probability for a cell does not
+meet the probability threshold, the cell will receive an 'Unknown' cell cycle
+state prediction. ccAFv2 cell cycle state predictions and probabilities for
+each cell in the object will be stored in the object .obs after classification.
 }

@@ -4,16 +4,14 @@
 \alias{DimPlot.ccAFv2}
 \title{DimPlot of ccAFv2 predictions with standard colors}
 \usage{
-DimPlot.ccAFv2(seurat1, ...)
+DimPlot.ccAFv2(seurat_obj, ...)
 }
 \arguments{
 \item{Seurat}{object that should have ccAFv2 cell cycle states predicted.}
 }
 \value{
-Seurat object with ccAFv2 calls and probabilities for each cell cycle state.
+A DimPlot object that can be plotted.
 }
 \description{
-This function predicts the cell cycle state for each cell in the object
-using the ccAFv2 cell cycle classifier. \link{Which cell cycle states/phases}
-\link{How to interpret data}
+This function plots the cell cycle onto a DimPlot for single cell or nuclei data.
 }
