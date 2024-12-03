@@ -7,6 +7,7 @@
 PredictCellCycle(
   seurat_obj,
   threshold = 0.5,
+  include_g0 = FALSE,
   do_sctransform = TRUE,
   assay = "SCT",
   species = "human",
@@ -18,6 +19,8 @@ PredictCellCycle(
 \item{seurat0:}{a seurat object must be supplied to classify, no default}
 
 \item{threshold:}{the value used to threchold the likelihoods, default is 0.5}
+
+\item{include_g0:}{whether to provide Neural G0 calls, or collapse G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)}
 
 \item{do_sctransform:}{whether to do SCTransform before classifying, default is TRUE}
 
@@ -35,7 +38,7 @@ Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 \description{
 This function predicts the cell cycle state for each cell in the object
 using the ccAFv2 cell cycle classifier. The possible cell cycle states that
-ccAFv2 can predict are: qG0, G1, G1/other, Late G1, S, S/G2, G2/M,
+ccAFv2 can predict are: Neural G0, G1, G1/other, Late G1, S, S/G2, G2/M,
 and M/Early G1.
 }
 \details{

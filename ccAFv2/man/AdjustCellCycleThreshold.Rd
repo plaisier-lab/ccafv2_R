@@ -4,12 +4,14 @@
 \alias{AdjustCellCycleThreshold}
 \title{Adjust Cell Cycle Threshold}
 \usage{
-AdjustCellCycleThreshold(seurat_obj, threshold = 0.5)
+AdjustCellCycleThreshold(seurat_obj, threshold = 0.5, include_g0 = FALSE)
 }
 \arguments{
 \item{seurat0:}{a seurat object must be supplied to classify, no default}
 
 \item{threshold:}{the value used to threchold the likelihoods, default is 0.5}
+
+\item{include_g0:}{whether to provide Neural G0 calls, or collapse G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)}
 }
 \value{
 Seurat object with ccAFv2 calls and probabilities for each cell cycle state
