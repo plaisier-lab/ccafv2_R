@@ -71,7 +71,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     rownames(predictions1) = colnames(seurat1)
     df1 = data.frame(predictions1)
     cat(paste0('  Choosing cell cycle state...\n'))
-    if(include_G0) {
+    if(include_g0) {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     } else {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('G0/G1','G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
@@ -102,7 +102,7 @@ AdjustCellCycleThreshold = function(seurat_obj, threshold=0.5, include_g0=FALSE)
     predictions1 = seurat_obj@meta.data[,make.names(classes)]
     colnames(predictions1) = classes
     df1 = data.frame(predictions1)
-    if(include_G0) {
+    if(include_g0) {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     } else {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('G0/G1','G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))

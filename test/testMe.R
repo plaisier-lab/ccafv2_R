@@ -13,6 +13,11 @@ reticulate:::use_python('/usr/bin/python3')
 setwd('/files')
 seurat_obj = readRDS('U5_normalized_ensembl.rds')
 
+
+##################
+## No Neural G0 ##
+##################
+
 # Predict cell cycle states
 seurat_obj = PredictCellCycle(seurat_obj)
 
@@ -42,6 +47,46 @@ pdf('ccAFv2_DimPlot_T_0.5.pdf')
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
 
+
+####################
+## With Neural G0 ##
+####################
+
+# Predict cell cycle states
+seurat_obj = PredictCellCycle(seurat_obj, include_g0=TRUE)
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_DimPlot_wNeuralG0.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_ThresholdPlot_wNeuralG0.pdf')
+ThresholdPlot(seurat_obj)
+dev.off()
+
+# Adjust ccAFv2 threshold to 0.9
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, threshold=0.9, include_g0=TRUE)
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_DimPlot_T_0.9_wNeuralG0.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
+# Adjust ccAFv2 threshold back to 0.5
+seurat_obj = AdjustCellCycleThreshold(seurat_obj, threshold=0.5, include_g0=TRUE)
+
+# Plot DimPlot colorized by cell cycle states
+pdf('ccAFv2_DimPlot_T_0.5_wNeuralG0.pdf')
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+
+
+###########################
+## Cell cycle regression ##
+###########################
+
+
 # Regress out cell cycle
 seurat_obj = PrepareForCellCycleRegression(seurat_obj)
 seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
@@ -53,7 +98,10 @@ pdf('ccAFv2_DimPlot_regressed.pdf')
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
 
-### Spatial
+
+#############
+## Spatial ##
+#############
 
 # Load Data
 setwd('/files')
