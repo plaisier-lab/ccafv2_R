@@ -1,4 +1,4 @@
-# docker run -it -v '/media/old_home/home/cplaisier/ccAFv2_test:/files' cplaisier/ccafv2_seurat4
+# docker run -it -v '/media/old_home/home/cplaisier/ccAFv2_test:/files' cplaisier/ccafv2_seurat5
 
 devtools::install_github("plaisier-lab/ccafv2_R/ccAFv2")
 

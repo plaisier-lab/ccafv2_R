@@ -74,7 +74,11 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     if(include_g0) {
         CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     } else {
-        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('G0/G1','G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+        max_state = colnames(predictions1)[apply(predictions1,1,which.max)]
+        cat(max_state)
+        max_state[max_state=='Neural G0'] = 'G0/G1'
+        max_state[max_state=='G1'] = 'G0/G1'
+        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     }
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
