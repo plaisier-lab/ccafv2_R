@@ -4,6 +4,7 @@ devtools::install_github("plaisier-lab/ccafv2_R/ccAFv2")
 
 library(ccAFv2)
 library(Seurat)
+library(ggplot2)
 
 reticulate:::use_python('/usr/bin/python3')
 
@@ -108,11 +109,12 @@ setwd('/files')
 spatial_obj = readRDS('GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds')
 
 # Predict cell cycle states
-spatial_obj = PredictCellCycle(spatial_obj, species='human', gene_id='symbol', spatial=TRUE)
+spatial_obj = PredictCellCycle(spatial_obj, include_g0=TRUE, species='human', gene_id='symbol', spatial=TRUE)
 
 # Plot cell cycle states onto spatial image
 pdf('ccAFv2_SpatialDimPlot_slice1.pdf')
 SpatialDimPlot.ccAFv2(spatial_obj) + theme(legend.position = "right")
+SpatialDimPlot(spatial_obj) # + theme(legend.position = "right")
 dev.off()
 
 
