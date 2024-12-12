@@ -34,6 +34,18 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 ### Requirements
 
 > It is strongly suggested that users utilize the Docker images we provide on DockerHub, as they contain all the dependencies needed to run ccAFv2.
+However, for buliding from source note that ccAFv2 uses tensorflow 2.12. Reticulate will by default install python 3.12 wich only supports tensorflow 2.16. 
+```r
+reticulate::install_python(version = '3.9')
+library(tensorflow)
+install_tensorflow(
+    method               = "auto", 
+    version              = "2.12.1", 
+    envname              = "retic", 
+    conda_python_version = "3.9", 
+    extra_packages       = c("matplotlib", "numpy", "pandas", "scikit-learn")
+)
+```
 
 #### Dependencies
 
