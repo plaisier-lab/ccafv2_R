@@ -113,8 +113,9 @@ spatial_obj = PredictCellCycle(spatial_obj, include_g0=TRUE, species='human', ge
 
 # Plot cell cycle states onto spatial image
 pdf('ccAFv2_SpatialDimPlot_slice1.pdf')
-SpatialDimPlot.ccAFv2(spatial_obj) + theme(legend.position = "right")
-SpatialDimPlot(spatial_obj) # + theme(legend.position = "right")
+SpatialDimPlot.ccAFv2(spatial_obj_updated) + theme(legend.position = "right")
+SpatialDimPlot.ccAFv2(spatial_obj_updated) # + theme(legend.position = "right")
+SpatialDimPlot(spatial_obj_updated, group.by='ccAFv2', image.alpha=0.2, pt.size.factor=1) # + theme(legend.position = "right")
 dev.off()
 
 
