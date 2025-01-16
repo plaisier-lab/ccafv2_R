@@ -1,5 +1,5 @@
 remote_theme: pages-themes/cayman@v0.2.0
-show_downloads: "false"
+show_downloads: false
 title: ccAFv2 cell cycle classifier for R
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
