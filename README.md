@@ -34,6 +34,18 @@ This repository is for the R package for the cell cycle classifier ccAFv2. The i
 ### Requirements
 
 > It is strongly suggested that users utilize the Docker images we provide on DockerHub, as they contain all the dependencies needed to run ccAFv2.
+However, for buliding from source note that ccAFv2 uses tensorflow 2.12. Reticulate will by default install python 3.12 wich only supports tensorflow 2.16. 
+```r
+reticulate::install_python(version = '3.9')
+library(tensorflow)
+install_tensorflow(
+    method               = "auto", 
+    version              = "2.12.1", 
+    envname              = "retic", 
+    conda_python_version = "3.9", 
+    extra_packages       = c("matplotlib", "numpy", "pandas", "scikit-learn")
+)
+```
 
 #### Dependencies
 
@@ -106,7 +118,7 @@ devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')
 
 ### Input for classification
 
-The input for the ccAFv2 classifier is expected to be a Seurat object that has been thoroughly quality-controlled. We provide an example of our quality control pipeline. It can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/scripts/02_scQC_2024.R). The data in the Seurat object is preferred to be SCTransformed; however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
+The input for the ccAFv2 classifier is expected to be a Seurat object that has been thoroughly quality-controlled. We provide an example of our quality control pipeline. It can be found [here](https://github.com/plaisier-lab/ccAFv2/blob/main/code/02_scQC_2024.R). The data in the Seurat object is preferred to be SCTransformed; however, the standard approach for normalization only applies to the highly variable genes. This can exclude genes needed for the
 accurate classification of the cell cycle. For this reason, the ccAFv2 PredictCellCycle function used to classify cell cycle states runs the SCTransform function again parameterized so that it will retain all genes captured in the dataset.
 
 ### Test data

@@ -15,7 +15,7 @@
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
 #' @param threshold: the value used to threchold the likelihoods, default is 0.5
-#' @param include_g0: whether to provide Neural G0 calls, or collapse G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
+#' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
@@ -32,7 +32,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
-    
+
     # Run SCTransform on data being sure to include the mgenes
     if(assay=='SCT' & do_sctransform) {
         cat('  Redoing SCTransform to ensure maximum overlap with classifier genes...\n')
@@ -77,7 +77,8 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
         max_state = colnames(predictions1)[apply(predictions1,1,which.max)]
         max_state[max_state=='Neural G0'] = 'G0/G1'
         max_state[max_state=='G1'] = 'G0/G1'
-        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+        max_state[max_state=='Late G1'] = 'G0/G1'
+        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     }
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
@@ -96,7 +97,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
 #' @param threshold: the value used to threchold the likelihoods, default is 0.5
-#' @param include_g0: whether to provide Neural G0 calls, or collapse G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
+#' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
 AdjustCellCycleThreshold = function(seurat_obj, threshold=0.5, include_g0=FALSE) {
@@ -111,7 +112,8 @@ AdjustCellCycleThreshold = function(seurat_obj, threshold=0.5, include_g0=FALSE)
         max_state = colnames(predictions1)[apply(predictions1,1,which.max)]
         max_state[max_state=='Neural G0'] = 'G0/G1'
         max_state[max_state=='G1'] = 'G0/G1'
-        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+        max_state[max_state=='Late G1'] = 'G0/G1'
+        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
     }
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
@@ -151,7 +153,7 @@ PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human
 #' @return A DimPlot object that can be plotted.
 #' @export
 DimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#E34234', 'Unknown' = '#cccccc'), ...)
+    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600', 'Unknown' = '#cccccc'), ...)
     return(dp1)
 }
 
@@ -163,7 +165,7 @@ DimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @return A DimPlot object that can be plotted.
 #' @export
 SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', ' Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#E34234'), ...)
+    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', ' Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600'), ...)
     return(dp1)
 }
 
