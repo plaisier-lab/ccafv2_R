@@ -1,6 +1,7 @@
 ---
 title: Main
 layout: home
+nav_order: 7
 ---
 # ccAFv2
 ![Logo]({{ site.baseurl }}/images/logo.png)
