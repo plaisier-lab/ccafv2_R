@@ -1,6 +1,5 @@
 ---
 title: Main
-nav_order: 1
 layout: home
 ---
 # ccAFv2
