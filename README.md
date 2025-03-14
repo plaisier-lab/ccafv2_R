@@ -97,7 +97,7 @@ docker run -it -v '<replace with the location for your files>:/files' cplaisier/
 
 > **NOTE**: The Docker images already have ccAFv2 installed, so both of these commands are unnecessary if you use them.
 
-Once the dependencies are met, ccAFv2 can be installed in R using the [devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) package, which must be installed first. The devtools package can be installed using the command:
+Once the dependencies are met, ccAFv2 can be installed in R using the [remotes](https://cran.r-project.org/web/packages/remotes/index.html) package, which must be installed first. The devtools package can be installed using the command:
 
 ```r
 install.packages('remotes')
