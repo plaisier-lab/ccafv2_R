@@ -14,7 +14,7 @@ that ccAFv2 can predict are: Neural G0, G1, G1/other, Late G1, S, S/G2,
 G2/M, and M/Early G1.
 
 ```         
-PredictCellCycle(
+seurat_ohj <- PredictCellCycle(
   seurat_obj,
   threshold = 0.5,
   include_g0 = FALSE,
@@ -22,7 +22,8 @@ PredictCellCycle(
   assay = "SCT",
   species = "human",
   gene_id = "ensembl",
-  spatial = FALSE)
+  spatial = FALSE
+ )
 ```
 
 
