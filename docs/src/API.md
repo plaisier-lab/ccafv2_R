@@ -14,7 +14,7 @@ that ccAFv2 can predict are: Neural G0, G1, G1/other, Late G1, S, S/G2,
 G2/M, and M/Early G1.
 
 ```         
-seurat_obj <- PredictCellCycle(
+PredictCellCycle(
   seurat_obj,
   threshold = 0.5,
   include_g0 = FALSE,
@@ -26,6 +26,7 @@ seurat_obj <- PredictCellCycle(
  )
 ```
 
+### Arguments
 
 | Arguments      | Description                                                                                                                 |
 |------------------------------------|------------------------------------|
@@ -38,7 +39,16 @@ seurat_obj <- PredictCellCycle(
 | gene_id        | what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'                                           |
 | spatial        | whether the data is spatial, defaults to FALSE                                                                              |
 
-[Example Use](https://rlhoove1.github.io/tryingmybest/src/single.html#marker-genes)
+### Value
+Returns a Seurat object with ccAFv2 predictions in the meta.data dataframe. The column 'ccAFv2' will contain the predicted cell cycle states and 
+the likelihood for each cell cycle state is stored in the meta.data. 
+
+### Example
+```
+# Run PredictCellCycle with default parameters, to change see descriptions above for arguments
+seurat_obj = PredictCellCycle(seurat_obj)
+```
+[Tutorial example](https://rlhoove1.github.io/tryingmybest/src/single.html#marker-genes)
 
 ## ThresholdPlot
 
