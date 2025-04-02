@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Non-Nuero Epithelial Data 
+title: Non-Nueroepithelial Data 
 parent: Classifying single cell or nuclei RNA-seq
 nav_order: 1
 ---
@@ -15,7 +15,7 @@ function re-runs SCTransform to retain all genes in the dataset.
 An example QC pipeline used on the U5 human neural stem cell (hNSC) dataset is available
 [here](https://github.com/plaisier-lab/FIXLINK).
 
-## Non-Neuro Epitheial Test Data
+## Non-Neuroepithelial Input Data
 
 The Human Skeletal Muscle Satellite Cells (HSkMSC) dataset used to test the ccAFv2 is
 available
