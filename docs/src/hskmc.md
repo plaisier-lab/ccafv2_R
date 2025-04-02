@@ -93,4 +93,4 @@ For this dataset a likelihood threshold of ≥ 0.5 because it signifies a minimu
 ```r
 ThresholdPlot(seurat_obj)
 ```
-![ThresholdPlot_1]({{ site.baseurl }}/images/ThresholdPlot_1.jpeg)
+![ThresholdPlot_1]({{ site.baseurl }}/images/ThresholdPlot_1_HSkMSC_seurat_obj_filtered_SCT.png)
