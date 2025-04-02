@@ -41,7 +41,7 @@ Setting do_sctransform = TRUE maximizes marker gene overlap. Timing and
 93/93 values may vary by dataset, which is normal.
 
 ```r
-PredictCellCycle(seurat_obj,
+seurat_obj = PredictCellCycle(seurat_obj,
                  threshold=0.5,
                  include_g0 = FALSE,
                  do_sctransform=TRUE,
