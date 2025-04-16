@@ -23,7 +23,7 @@ AdjustCellCycleThreshold(seurat_obj, threshold = 0.5, include_g0 = FALSE)
 
 ### Value
 
-Returns the **modified `Seurat` object**, updating the `ccAFv2` metadata
+Returns the modified Seurat object, updating the `ccAFv2` metadata
 column to reflect cell cycle state predictions at the new threshold.
 
 ### Example
