@@ -22,7 +22,7 @@ SpatialDimPlot.ccAFv2(seurat_obj, ...)
 
 ### Value
 
-Returns a **`ggplot` object** produced by Seurat’s `SpatialDimPlot`
+Returns a ggplot object produced by Seurat’s SpatialDimPlot
 function.
 
 ### Example
