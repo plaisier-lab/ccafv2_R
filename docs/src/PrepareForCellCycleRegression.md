@@ -45,4 +45,4 @@ PrepareForCellCycleRegression(seurat_obj)
 ```
 
 [Example
-Use](https://rlhoove1.github.io/tryingmybest/src/regress.html#cell-cycle-regression)
+Use](https://plaisier-lab.github.io/ccafv2_R/src/regress.html#cell-cycle-regression)
