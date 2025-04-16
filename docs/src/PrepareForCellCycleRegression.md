@@ -8,7 +8,7 @@ nav_order: 4
 ## PrepareForCellCycleRegression
 
 This function calculates module scores for a curated set of cell
-cycle-related gene clusters from the `ccAFv2` gene set. These scores can
+cycle-related gene clusters from the ccAFv2 gene set. These scores can
 be used to regress out cell cycle effects from single-cell expression
 data.
 
