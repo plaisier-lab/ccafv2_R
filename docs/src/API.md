@@ -30,7 +30,7 @@ PredictCellCycle(
 
 | Arguments      | Range of Values        | Description                                                                                           |
 |-------------------|-------------------|-----------------------------------|
-| seurat_obj     |                        | a seurat object must be supplied to classify, no default                                              |
+| seurat_obj     |           NA             | a seurat object must be supplied to classify, no default                                              |
 | threshold      | Numeric (0 to 1)       | the value used to threshold the likelihoods, default is 0.5                                           |
 | include_g0     | TRUE or FALSE          | whether to provide Neural G0 calls, or collapse G1 and Neural G0 into G0/G1, default is FALSE         |
 | do_sctransform | TRUE or FALSE          | whether to do SCTransform before classifying, default is TRUE                                         |
