@@ -7,8 +7,8 @@ nav_order: 5
 ## DimPlot.ccAFv2
 
 This function creates a dimensional reduction plot (e.g., UMAP or t-SNE)
-to visualize cell cycle states predicted in the `ccAFv2` metadata field.
-It uses Seurat’s `DimPlot` function, with standardized coloring for each
+to visualize cell cycle states predicted in the 'ccAFv2' metadata field.
+It uses Seurat’s DimPlot function, with standardized coloring for each
 cell cycle phase.
 
 ``` r         
@@ -22,7 +22,7 @@ DimPlot.ccAFv2(seurat_obj, ...)
 
 ### Value
 
-Returns a **`ggplot`** object produced by Seurat’s `DimPlot` function.
+Returns a ggplot object produced by Seurat’s DimPlot function.
 
 ### Example
 
