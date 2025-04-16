@@ -45,7 +45,7 @@ Returns the input Seurat object, with:
 -   Cell cycle prediction probabilities added to the metadata (one
     column per class).
 
--   A `ccAFv2` column in metadata containing the assigned cell cycle
+-   A 'ccAFv2' column in metadata containing the assigned cell cycle
     state per cell.
 
 ### Example
