@@ -11,7 +11,7 @@ use the residual variance for further analysis. We support this using ccAFv2 mar
 calculating expression module scores for G0, Late G1, S, S/G2, G2/M, and
 M/Early G1 phases.
 
-## Plot Before Regression
+## Plot Before Regression  
 ![Dimplot_1]({{ site.baseurl }}/images/DimPlot_1.jpeg)
 
 
