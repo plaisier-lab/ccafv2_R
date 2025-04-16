@@ -13,17 +13,17 @@ has_toc: false
 ### Prediction & Thresholding
   - **[PredictCellCycle](https://plaisier-lab.github.io/ccafv2_R/src/PredictCellCycle.html)**  
     Run the ccAFv2 classifier and assign cell cycle states.
-  - **[AdjustCellCycleThreshold](https://plaisier-lab.github.io/ccafv2_R/src/adjustcellcyclethreshold.html)**  
+  - **[AdjustCellCycleThreshold](https://plaisier-lab.github.io/ccafv2_R/src/AdjustCellCycleThreshold.html)**  
     Re-assign states based on a new prediction confidence threshold.
-  - **[ThresholdPlot](https://plaisier-lab.github.io/ccafv2_R/src/thresholdplot.html)**  
+  - **[ThresholdPlot](https://plaisier-lab.github.io/ccafv2_R/src/ThresholdPlot.html)**  
     Visualize how prediction thresholds affect state assignment.
 
 ### Visualization
-  - **[DimPlot.ccAFv2](https://plaisier-lab.github.io/ccafv2_R/src/dimplotccafv2.html)**  
+  - **[DimPlot.ccAFv2](https://plaisier-lab.github.io/ccafv2_R/src/DimPlotccAFv2.html)**  
     Plot predicted cell cycle states on a UMAP or PCA.
-  - **[SpatialDimPlot.ccAFv2](https://plaisier-lab.github.io/ccafv2_R/src/spatialdimplotccafv2.html)**  
+  - **[SpatialDimPlot.ccAFv2](https://plaisier-lab.github.io/ccafv2_R/src/SpatialDimPlotccAFv2.html)**  
     Visualize predicted states in spatial transcriptomics data.
 
 ### Data Preparation
-  -  **[PrepareForCellCycleRegression](https://plaisier-lab.github.io/ccafv2_R/src/prepareforcellcycleregression.html)**  
+  -  **[PrepareForCellCycleRegression](https://plaisier-lab.github.io/ccafv2_R/src/PrepareForCellCycleRegression.html)**  
     Compute module scores from marker gene sets for regression.
