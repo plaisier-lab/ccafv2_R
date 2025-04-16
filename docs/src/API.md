@@ -11,11 +11,11 @@ has_toc: false
 ## Table of Contents
 
 ### Prediction & Thresholding
-  - **[PredictCellCycle](https://plaisier-lab.github.io/ccafv2_R/src/PredictCellCycle.html)**
+  - **[PredictCellCycle](https://plaisier-lab.github.io/ccafv2_R/src/PredictCellCycle.html)**  
     Run the ccAFv2 classifier and assign cell cycle states.
-  - **[AdjustCellCycleThreshold](https://plaisier-lab.github.io/ccafv2_R/src/adjustcellcyclethreshold.html)**
+  - **[AdjustCellCycleThreshold](https://plaisier-lab.github.io/ccafv2_R/src/adjustcellcyclethreshold.html)**  
     Re-assign states based on a new prediction confidence threshold.
-  - **[ThresholdPlot](https://plaisier-lab.github.io/ccafv2_R/src/thresholdplot.html)**
+  - **[ThresholdPlot](https://plaisier-lab.github.io/ccafv2_R/src/thresholdplot.html)**  
     Visualize how prediction thresholds affect state assignment.
 
 ### Visualization
