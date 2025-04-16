@@ -34,4 +34,4 @@ AdjustCellCycleThreshold(seurat_obj)
 ```
 
 [Example
-Use](https://rlhoove1.github.io/tryingmybest/src/Choosing_Threshold.html)
+Use](https://plaisier-lab.github.io/ccafv2_R/src/Choosing_Threshold.html)
