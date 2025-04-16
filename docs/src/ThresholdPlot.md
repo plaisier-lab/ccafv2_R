@@ -41,7 +41,8 @@ Cells with a maximum score below a given threshold are labeled as
 ### Example
 
 ``` r
-ThresholdPlot(seurat_obj, ...)
+# plot classification confidence after running PredictCellCycle() funtion
+ThresholdPlot(seurat_obj)
 ```
 
 [Example
