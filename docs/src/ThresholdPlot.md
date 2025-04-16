@@ -28,7 +28,7 @@ ThresholdPlot(seurat_obj, ...)
 
 | Argument   | Range of Values | Description                                                                                                                                                                           |
 |-----------------|---------------|-------------------------------------------------------|
-| seurat_obj | NA              | A Seurat object containing metadata columns with cell cycle prediction scores for the following states: `'Neural.G0'`, `'G1'`, `'Late.G1'`, `'S'`, `'S.G2'`, `'G2.M'`, `'M.Early.G1'` |
+| seurat_obj | NA              | A Seurat object containing metadata columns with cell cycle prediction scores for the following states: 'Neural.G0', 'G1', 'Late.G1', 'S', 'S.G2', 'G2.M', 'M.Early.G1' |
 | ...        | ...             | Additional arguments passed using `ggplot` functions for further customization.                                                                                                       |
 
 ### Value
