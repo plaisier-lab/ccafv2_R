@@ -1,5 +1,9 @@
-
-
+---
+layout: default
+title: PredictCellCycle
+parent: API
+nav_order: 1
+---
 
 ## PredictCellCycle
 
