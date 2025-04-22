@@ -2,7 +2,7 @@
 layout: default
 title: DimPlot.ccAFv2
 parent: API
-nav_order: 5
+nav_order: 4
 ---
 ## DimPlot.ccAFv2
 
