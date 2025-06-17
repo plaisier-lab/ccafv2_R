@@ -1,4 +1,4 @@
-#' Predict Cell Cycle
+##' Predict Cell Cycle
 #'
 #' This function predicts the cell cycle state for each cell in the object
 #' using the ccAFv2 cell cycle classifier. The possible cell cycle states that
@@ -11,7 +11,6 @@
 #' meet the probability threshold, the cell will receive an 'Unknown' cell cycle
 #' state prediction. ccAFv2 cell cycle state predictions and probabilities for
 #' each cell in the object will be stored in the object .obs after classification.
-#'
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
 #' @param threshold: the value used to threchold the likelihoods, default is 0.5
@@ -27,13 +26,13 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj
-
+  
     # Load model and marker genes
-    ccAFv2 = keras::load_model_hdf5(system.file('extdata', 'ccAFv2_model.h5', package='ccAFv2'))
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
-    mgenes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
+    marker_genes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
 
-    # Run SCTransform on data being sure to include the mgenes
+    
+    # Run SCTransform on data being sure to include the marker_genes
     if(assay=='SCT' & do_sctransform) {
         cat('  Redoing SCTransform to ensure maximum overlap with classifier genes...\n')
         if(!spatial) {
@@ -44,47 +43,68 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     }
 
     # Subset data marker genes to marker genes included in classification
-    sub_genes = intersect(row.names(seurat1),mgenes)
+    common_genes = intersect(row.names(seurat1),marker_genes)
 
     # Find missing genes and assign 0s to each cell
-    cat(paste0('  Total possible marker genes for this classifier: ', length(mgenes),'\n'))
+    cat(paste0('  Total possible marker genes for this classifier: ', length(marker_genes),'\n'))
     if(assay=='SCT') {
-        input_mat = seurat1@assays$SCT@scale.data[sub_genes,]
+        input_mat = seurat1@assays$SCT@scale.data[common_genes,]
     } else {
-        input_mat = seurat1@assays$RNA@data[sub_genes,]
+        input_mat = seurat1@assays$RNA@data[common_genes,]
     }
-    missing_genes = setdiff(mgenes, rownames(input_mat))
+
+    missing_genes = setdiff(marker_genes, rownames(input_mat))
+    
     cat(paste0('    Marker genes present in this dataset: ', nrow(input_mat),'\n'))
     cat(paste0('    Missing marker genes in this dataset: ', length(missing_genes),'\n'))
+    
     if(nrow(input_mat)<=689) {
         warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
     }
+    
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
-    tmp = matrix(min(input_mat_scaled,na.rm=T),nrow=length(missing_genes), ncol=ncol(seurat1))
-    rownames(tmp) = missing_genes
-    colnames(tmp) = colnames(input_mat)
-    input_mat_scaled_add_missing_genes = rbind(input_mat_scaled, tmp)[mgenes,]
-    input_mat_scaled_add_missing_genes[!is.finite(input_mat_scaled_add_missing_genes)] = 0
+
+    # create the input and output arrays (oup_preds) here with 
+    # names and dimensions of marker_genes x samples (cols in seurat object 1)
+    nscaled_data = matrix(min(input_mat_scaled,na.rm=T),
+                          nrow=length(marker_genes), ncol=ncol(seurat1), 
+                          dimnames = list(marker_genes, colnames(seurat1)))
+
+    # add in the nromalized expression data from the seurat data set 
+    nscaled_data[common_genes, ] = input_mat_scaled[common_genes, ]           
+    nscaled_data[!is.finite(nscaled_data)] = 0
+    
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
-    predictions1 = predict(ccAFv2, t(input_mat_scaled_add_missing_genes))
-    colnames(predictions1) = classes
-    rownames(predictions1) = colnames(seurat1)
-    df1 = data.frame(predictions1)
+
+    # apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
+    oup_preds = apply(nscaled_data, 2, ccAFv2_classifier)
+    rownames(oup_preds) = classes   
+   
+    # organize the predictions into a dataframe and return the foudn cell cycle states
+    # We need the dataframe with rows as samples hence the transpose here
+    df1 = data.frame(t(oup_preds))
     cat(paste0('  Choosing cell cycle state...\n'))
     if(include_g0) {
-        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+        
+      CellCycleState = data.frame(factor(rownames(oup_preds)[apply(oup_preds,2,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = colnames(oup_preds))
+
     } else {
-        max_state = colnames(predictions1)[apply(predictions1,1,which.max)]
+        
+        max_state = rownames(oup_preds)[apply(oup_preds,2,which.max)]
         max_state[max_state=='Neural G0'] = 'G0/G1'
         max_state[max_state=='G1'] = 'G0/G1'
         max_state[max_state=='Late G1'] = 'G0/G1'
-        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = rownames(predictions1))
+        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = colnames(oup_preds))
+    
     }
+    
     colnames(CellCycleState) = 'ccAFv2'
     df1[,'ccAFv2'] = CellCycleState$ccAFv2
-    df1[which(apply(predictions1,1,max)<threshold),'ccAFv2'] = 'Unknown'
+    df1[which(apply(oup_preds,2,max)<threshold),'ccAFv2'] = 'Unknown'
+    
     cat('  Adding probabilities and predictions to metadata\n')
     seurat_obj = AddMetaData(object = seurat_obj, metadata = df1)
+    
     cat('Done\n')
     return(seurat_obj)
 }
@@ -193,4 +213,18 @@ ThresholdPlot = function(seurat_obj, ...) {
     }
     tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC', 'G0/G1' = '#E34234')) + ggplot2::theme_minimal()
     return(tp1)
+}
+
+
+#' ccAFv2 classifier function
+#' 
+#' This function calls the C code C_ccAFv2.c to run the neural network classifier. 
+#' ccAFv2_classifier returns a 1 x 7 double precision vector of predictions 
+#' 
+#' @param  norm_expVec a double precision 1 x 861 vector of normalized gene expression values
+#' @return  ccAFv2_classifier returns a 1 x 7 double precision vector of class probabilites
+#'
+#' @export
+ccAFv2_classifier <- function(norm_expVec) {
+  .Call("C_ccAFv2", norm_expVec)
 }

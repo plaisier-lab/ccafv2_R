@@ -6,3 +6,6 @@ export(PredictCellCycle)
 export(PrepareForCellCycleRegression)
 export(SpatialDimPlot.ccAFv2)
 export(ThresholdPlot)
+
+export(ccAFv2_classifier)
+useDynLib(ccAFv2, .registration = TRUE)
