@@ -2,10 +2,7 @@
 data/U5_normalized_ensembl_041723.rds
 Icon
 .DS_Store
-Icon
 data/U5_post_processing_ensembl_041923.rds
-Icon
-Icon
 desktop.ini
 .DS_Store
 
@@ -23,6 +20,3 @@ _site/
 vendor/
 *.md~
 *.un~
-Icon
-Icon
-Icon
