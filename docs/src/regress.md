@@ -5,12 +5,17 @@ nav_order: 10
 
 ---
 # Cell Cycle Regression
-After using ccAFv2 to [predict the cell cycle]([https://github.com/plaisier-lab/FIXLINK](https://plaisier-lab.github.io/ccafv2_R/src/single.html)), 
+After using ccAFv2 to [predict the cell cycle]([https://plaisier-lab.github.io/ccafv2_R/src/single.html), 
 the cell cycle signal can be regressed out. Since the cell cycle significantly impacts gene expression, it is common practice to remove its effects and
 use the residual variance for further analysis. We support this using ccAFv2 marker genes, starting by
 calculating expression module scores for G0, Late G1, S, S/G2, G2/M, and
 M/Early G1 phases.
 
+## Before Regression  
+![Dimplot_1]({{ site.baseurl }}/images/DimPlot_1.jpeg)
+
+
+## Prepare For Cell Cycle Regression
 ```r
 #Collect expression module scores for the cell cycle states 
 seurat_obj = PrepareForCellCycleRegression(seurat_obj)
