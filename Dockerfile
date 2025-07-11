@@ -11,14 +11,11 @@ RUN apt-get update -y
 RUN apt-get install -y libharfbuzz-dev libfribidi-dev
 RUN apt-get install -y build-essential cmake
 
-RUN pip3 install --upgrade pip
-RUN pip3 install tensorflow==2.12.*
-
-RUN R -e "install.packages(c('devtools','roxygen2'))"
-RUN R -e "install.packages(c('keras', 'plumber', 'yaml', 'base64enc', 'remotes', 'readr', 'writexl'))"
+RUN R -e "install.packages(c('remotes','roxygen2','Seurat','ggplot2'))"
+RUN R -e "install.packages(c('plumber', 'yaml', 'base64enc', 'readr', 'writexl'))"
 RUN R -e "install.packages(c('BiocManager'))"
 RUN R -e "BiocManager::install('org.Hs.eg.db')"
 RUN R -e "BiocManager::install(c('org.Mm.eg.db'))"
-RUN R -e "devtools::install_github('plaisier-lab/ccafv2_R/ccAFv2')"
+RUN R -e "remotes::install_github('plaisier-lab/ccafv2_R/ccAFv2')"
 RUN apt-get install -y vim
 RUN R -e "install.packages(c('ADImpute','yarrr'))"
