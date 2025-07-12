@@ -1,5 +1,9 @@
 # ccAFv2: Cell cycle classifier for R and Seurat
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![C](https://img.shields.io/badge/C-A8B9CC.svg?style=for-the-badge&logo=C&logoColor=black)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![R](https://img.shields.io/badge/R-276DC3.svg?style=for-the-badge&logo=R&logoColor=white)](https://cran.r-project.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white)](https://www.docker.com/)
+[<img src="https://img.shields.io/badge/blue.svg?logo=Docker">](https://hub.docker.com/r/cplaisier/ccafv2)
 
 This repository is for the R package for the cell cycle classifier ccAFv2. The input for the ccAFv2 classifier is single cell, nuclei, or spatial RNA-seq data.  The features of this classifier are that it classifies six cell cycle states (G1, Late G1, S, S/G2, G2/M, and M/Early G1) and a quiescent-like G0 state, and it incorporates a tunable parameter to filter out less certain classifications. This package is implemented in R for use in [Seurat](https://satijalab.org/seurat/) analysis workflows. We provide examples of installing and running ccAFv2 on Seurat objects (both sc/snRNA-seq and ST-RNA-seq), plot and use results, and regress out cell cycle effects if desired.
 
