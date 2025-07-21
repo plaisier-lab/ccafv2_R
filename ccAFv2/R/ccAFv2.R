@@ -92,8 +92,6 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
       # Since we are discriminating on g0 we should also calculate the cell angles
       # Assign theta values for each state 
       thetas   = seq(0,360, 360/7)[1:7] * pi/180
-      theta_mat = matrix(rep(thetas,nrow(meta_df)), nrow = nrow(meta_df), byrow = TRUE)
-      
       
     } else {
       
@@ -114,7 +112,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     cat('  Calculating cell state order...\n')
     # calculate the xy values for each state by multiplying the class probability by the cosine and sine of the assigned angle
     theta_mat = matrix(rep(thetas,nrow(meta_df)), nrow = nrow(meta_df), byrow = TRUE)
-    cell_states_cols =  c("Neural.G0", "M.Early.G1", "G1","Late.G1", "S", "S.G2", "G2.M" )
+    cell_states_cols =  c("Neural.G0", "G1","Late.G1", "S", "S.G2", "G2.M", "M.Early.G1" )
     x_vals = meta_df[, cell_states_cols] * cos(theta_mat)
     y_vals = meta_df[, cell_states_cols] * sin(theta_mat)
     
@@ -125,6 +123,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     # calculate the angle 
     # Note atan2 has zero at the 3 o'clock position and flips signs at 9 o'clock. 
     # Add 2pi when the function is negative to give 0->2pi values.
+    
     ang = atan2(y_sum, x_sum)
     ang[ang<0] = ang[ang<0]+2*pi
     
