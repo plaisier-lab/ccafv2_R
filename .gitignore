@@ -26,3 +26,13 @@ vendor/
 /docs
 Icon
 Icon
+
+# Compiled objects and shared libraries
+*.o
+*.so
+*.dll
+.Rproj.user
+
+# R project files
+*.Rhistory
+*.Rproj

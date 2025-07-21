@@ -12,11 +12,11 @@
 #' state prediction. ccAFv2 cell cycle state predictions and probabilities for
 #' each cell in the object will be stored in the object .obs after classification.
 #'
-#' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param threshold: the value used to threchold the likelihoods, default is 0.5
+#' @param seurat0: a Seurat object must be supplied to classify, no default
+#' @param threshold: the value used to threshold the likelihoods, default is 0.5
 #' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
-#' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+#' @param assay: which Seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
 #' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
 #' @param spatial: whether the data is spatial, defaults to FALSE
@@ -28,7 +28,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     seurat1 = seurat_obj
   
     # Load model and marker genes
-    classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
+    classes      = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     marker_genes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
 
     
@@ -65,12 +65,12 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     input_mat_scaled = t(scale(t(as.matrix(input_mat))))
 
     # create the input and output arrays (oup_preds) here with 
-    # names and dimensions of marker_genes x samples (cols in seurat object 1)
+    # names and dimensions of marker_genes x samples (cols in Seurat object 1)
     nscaled_data = matrix(min(input_mat_scaled,na.rm=T),
                           nrow=length(marker_genes), ncol=ncol(seurat1), 
                           dimnames = list(marker_genes, colnames(seurat1)))
 
-    # add in the nromalized expression data from the seurat data set 
+    # add in the normalized expression data from the Seurat data set 
     nscaled_data[common_genes, ] = input_mat_scaled[common_genes, ]           
     nscaled_data[!is.finite(nscaled_data)] = 0
     
@@ -79,31 +79,72 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     # apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
     oup_preds = apply(nscaled_data, 2, ccAFv2_classifier)
     rownames(oup_preds) = classes   
-   
-    # organize the predictions into a dataframe and return the foudn cell cycle states
+
+    # organize the predictions into a dataframe and return the found cell cycle states
     # We need the dataframe with rows as samples hence the transpose here
-    df1 = data.frame(t(oup_preds))
+    meta_df = data.frame(t(oup_preds), row.names = colnames(oup_preds))
     cat(paste0('  Choosing cell cycle state...\n'))
+
     if(include_g0) {
-        
+  
       CellCycleState = data.frame(factor(rownames(oup_preds)[apply(oup_preds,2,which.max)], levels=c('Neural G0','G1','Late G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = colnames(oup_preds))
 
+      # Since we are discriminating on g0 we should also calculate the cell angles
+      # Assign theta values for each state 
+      thetas   = seq(0,360, 360/7)[1:7] * pi/180
+      theta_mat = matrix(rep(thetas,nrow(meta_df)), nrow = nrow(meta_df), byrow = TRUE)
+      
+      
     } else {
-        
+      
         max_state = rownames(oup_preds)[apply(oup_preds,2,which.max)]
         max_state[max_state=='Neural G0'] = 'G0/G1'
         max_state[max_state=='G1'] = 'G0/G1'
         max_state[max_state=='Late G1'] = 'G0/G1'
-        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')), row.names = colnames(oup_preds))
+        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')),  row.names = colnames(oup_preds) )
+        
+        # Since we are discriminating on g1 we should also calculate the cell angles
+        # Assign theta values for each state but but make the first 3 values 0 because 
+        # all the G0, G1, and Late G1 are consolidated
+        
+        thetas = c(0,0,0,0,0,0,0)
+        thetas[3:7] = seq(0,360, 360/5)[1:5] * pi/180
     
     }
+    cat('  Calculating cell state order...\n')
+    # calculate the xy values for each state by multiplying the class probability by the cosine and sine of the assigned angle
+    theta_mat = matrix(rep(thetas,nrow(meta_df)), nrow = nrow(meta_df), byrow = TRUE)
+    cell_states_cols =  c("Neural.G0", "M.Early.G1", "G1","Late.G1", "S", "S.G2", "G2.M" )
+    x_vals = meta_df[, cell_states_cols] * cos(theta_mat)
+    y_vals = meta_df[, cell_states_cols] * sin(theta_mat)
+    
+    # add the vector components together
+    x_sum = rowSums(x_vals)
+    y_sum = rowSums(y_vals)
+    
+    # calculate the angle 
+    # Note atan2 has zero at the 3 o'clock position and flips signs at 9 o'clock. 
+    # Add 2pi when the function is negative to give 0->2pi values.
+    ang = atan2(y_sum, x_sum)
+    ang[ang<0] = ang[ang<0]+2*pi
+    
+    xya_df     = data.frame(Angles = ang, 
+                            x_ords = x_sum, 
+                            y_ords = y_sum, 
+                            Cell_Order = order(ang),
+                            row.names = names(ang))
+    
+    meta_df[,'Angles']     = xya_df$Angles
+    meta_df[,'x_ords']     = xya_df$x_ords
+    meta_df[,'y_ords']     = xya_df$y_ords
+    meta_df[,'Cell_Order'] = xya_df$Cell_Order
     
     colnames(CellCycleState) = 'ccAFv2'
-    df1[,'ccAFv2'] = CellCycleState$ccAFv2
-    df1[which(apply(oup_preds,2,max)<threshold),'ccAFv2'] = 'Unknown'
+    meta_df[,'ccAFv2'] = CellCycleState$ccAFv2
+    meta_df[which(apply(oup_preds,2,max)<threshold),'ccAFv2'] = 'Unknown'
     
     cat('  Adding probabilities and predictions to metadata\n')
-    seurat_obj = AddMetaData(object = seurat_obj, metadata = df1)
+    seurat_obj = AddMetaData(object = seurat_obj, metadata = meta_df)
     
     cat('Done\n')
     return(seurat_obj)
@@ -145,10 +186,10 @@ AdjustCellCycleThreshold = function(seurat_obj, threshold=0.5, include_g0=FALSE)
 
 #' Prepare expression module scores for regressing out the cell cycle
 #'
-#' This function computes moduel scores for each cell cycle state
+#' This function computes module scores for each cell cycle state
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+#' @param assay: which seurat_obj assay to use for classification, helpful if data is pre-normalized, default is 'SCT'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
 #' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
 #' @param spatial: whether the data is spatial, defaults to FALSE
@@ -214,7 +255,6 @@ ThresholdPlot = function(seurat_obj, ...) {
     tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC', 'G0/G1' = '#E34234')) + ggplot2::theme_minimal()
     return(tp1)
 }
-
 
 #' ccAFv2 classifier function
 #' 
