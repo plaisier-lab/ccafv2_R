@@ -61,10 +61,17 @@ pdf('ccAFv2_DimPlot_wNeuralG0.pdf')
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
 
-# Plot DimPlot colorized by cell cycle states
+# Plot Threshold plot to show classifier performance vs probability threshold levels
 pdf('ccAFv2_ThresholdPlot_wNeuralG0.pdf')
 ThresholdPlot(seurat_obj)
 dev.off()
+
+# Plot a radial plot depicting cells as they progress through states
+pdf('ccAFv2_ClockPlot_wNeuralG0.pdf')
+ClockPlot(seurat_obj)
+dev.off()
+
+
 
 # Adjust ccAFv2 threshold to 0.9
 seurat_obj = AdjustCellCycleThreshold(seurat_obj, threshold=0.9, include_g0=TRUE)

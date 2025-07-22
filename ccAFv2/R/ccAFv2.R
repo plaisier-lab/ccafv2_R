@@ -213,7 +213,18 @@ PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human
 #' @return A DimPlot object that can be plotted.
 #' @export
 DimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600', 'Unknown' = '#cccccc'), ...)
+  
+  label_cmap = c('G1'         = '#f37f73', 
+                 'G2.M'       = '#3db270', 
+                 'Late.G1'    = '#1fb1a9', 
+                 'M.Early.G1' = '#6d90ca', 
+                 'Neural.G0'  = '#d9a428', 
+                 'S'          = '#8571b2', 
+                 'S.G2'       = '#db7092', 
+                 'Unknown'    = '#CCCCCC', 
+                 'G0/G1'      = '#E34234')
+  
+    dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = label_cmap, ...)
     return(dp1)
 }
 
@@ -225,7 +236,18 @@ DimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @return A DimPlot object that can be plotted.
 #' @export
 SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', ' Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600'), ...)
+  
+  label_cmap = c('G1'         = '#f37f73', 
+                 'G2.M'       = '#3db270', 
+                 'Late.G1'    = '#1fb1a9', 
+                 'M.Early.G1' = '#6d90ca', 
+                 'Neural.G0'  = '#d9a428', 
+                 'S'          = '#8571b2', 
+                 'S.G2'       = '#db7092', 
+                 'Unknown'    = '#CCCCCC', 
+                 'G0/G1'      = '#E34234')
+  
+    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = label_cmap, ...)
     return(dp1)
 }
 
@@ -237,22 +259,101 @@ SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @param Seurat object with ccAFv2 cell cycle states predicited.
 #' @return A ggplot object that can be plotted.
 #' @export
-ThresholdPlot = function(seurat_obj, ...) {
-    predictions1 = seurat_obj@meta.data[,c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1')]
-    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+ThresholdPlot = function(seurat_obj, ...) 
+{
+  
+    cell_states_cols =  c("Neural.G0", "G1","Late.G1", "S", "S.G2", "G2.M", "M.Early.G1", "Unknown")
+    predictions1 = seurat_obj@meta.data[, cell_state_cols[1:7]]
+    
+    CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], 
+                                levels = cell_states_cols), 
+                                row.names = rownames(predictions1))
     colnames(CellCycleState) = 'ccAFv2'
+    
     dfall = data.frame(table(CellCycleState)/nrow(CellCycleState))
     dfall[,'Threshold'] = 0
-    for(threshold in c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
-        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], levels=c('Neural.G0','G1','Late.G1','S','S.G2','G2.M','M.Early.G1','Unknown')), row.names = rownames(predictions1))
+    
+    for(threshold in seq(from = 0.1, to = 0.9, by = 0.1)) {
+        CellCycleState = data.frame(factor(colnames(predictions1)[apply(predictions1,1,which.max)], 
+                                    levels= cell_states_cols), 
+                                    row.names = rownames(predictions1))
         colnames(CellCycleState) = 'ccAFv2'
+        
         CellCycleState[which(apply(predictions1,1,max)<threshold),'ccAFv2'] = 'Unknown'
         df1 = data.frame(table(CellCycleState)/nrow(CellCycleState))
         df1[,'Threshold'] = as.character(threshold)
         dfall = rbind(dfall, df1)
     }
-    tp1 = ggplot2::ggplot(dfall) + ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + ggplot2::scale_fill_manual(values = c('G1' = '#f37f73', 'G2.M' = '#3db270', 'Late.G1' = '#1fb1a9', 'M.Early.G1' = '#6d90ca', 'Neural.G0' = '#d9a428', 'S' = '#8571b2', 'S.G2' = '#db7092', 'Unknown' = '#CCCCCC', 'G0/G1' = '#E34234')) + ggplot2::theme_minimal()
+    
+    label_cmap = c('G1'         = '#f37f73', 
+                   'G2.M'       = '#3db270', 
+                   'Late.G1'    = '#1fb1a9', 
+                   'M.Early.G1' = '#6d90ca', 
+                   'Neural.G0'  = '#d9a428', 
+                   'S'          = '#8571b2', 
+                   'S.G2'       = '#db7092', 
+                   'Unknown'    = '#CCCCCC', 
+                   'G0/G1'      = '#E34234')
+    
+    tp1 = ggplot2::ggplot(dfall) + 
+          ggplot2::geom_bar(ggplot2::aes(x = Threshold, y = Freq, fill = ccAFv2), position = "stack", stat = "identity") + 
+          ggplot2::scale_fill_manual(values = label_cmap) + 
+          ggplot2::theme_minimal()
+    
     return(tp1)
+}
+
+#' Clock_Plot of classified cells in the ccAFv2 classifer
+#' 
+#' Clock Plots are a simple representation of the all cells in the cell cycle state
+#' as it gives a reasonable visual representation of cell classification and the progression
+#' of cells between cell states.  
+#' 
+#' @param  Seurat object with ccAFv2 cell cycle states predicited. (PredictCellCyle(suerat_obj) has been called)
+#' @param  plot_title A plot title to label the plot.
+#' @return A ggplot object that can be plotted.
+#' @export
+ClockPlot = function(Seurat, plot_title = '') {
+  
+    
+  label_cmap = c('G1' = '#f37f73', 
+                 'G2/M' = '#3db270', 
+                 'Late G1' = '#1fb1a9',
+                 'M/Early G1' = '#6d90ca', 
+                 'Neural G0' = '#d9a428', 
+                 'S' = '#8571b2', 
+                 'S/G2' = '#db7092', 
+                 'G0/G1' = '#FF6600',
+                 'Unknown' = '#d3d3d3')
+  
+  meta_data = seurat_obj@meta.data
+  
+  thetas   = seq(0,360, 360/7)[1:7] * pi/180
+  ccAFv2_states    = c("Neural G0", "M/Early G1", "G1","Late G1", "S", "S/G2", "G2/M" )
+  
+  clock_lines = data.frame(x = 0, y = 0, xend = cos(thetas), yend = sin(thetas))
+  
+  clock_plot =  ggplot2::ggplot() +
+                ggplot2::geom_segment(data = clock_lines, 
+                                      ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+                                      size = 0.5, color = "black") +
+                ggplot2::geom_point(data = meta_data, ggplot2::aes(x = x_ords, y = y_ords, color = ccAFv2),
+                           size = 0.5) +
+                ggplot2::xlim( -1.2, 1.2 ) + 
+                ggplot2::ylim( -1.2, 1.2 ) + 
+                ggplot2::scale_color_manual(name = "Cell Cycle Phase", values =label_cmap) + 
+                ggplot2::geom_text(data = clock_lines,
+                                   aes(x = xend * 1.15, y = yend * 1.15, label = ccAFv2_states),
+                                   size = 3, hjust = 0.5, vjust = 0.5, fontface = 'bold') +
+                ggplot2::labs(title = plot_title) + 
+                ggplot2::coord_fixed() + 
+                ggplot2::theme( legend.position = "none",plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+                                panel.background = element_blank(),
+                                panel.grid.major = element_blank(), 
+                                panel.grid.minor = element_blank(),
+                                panel.border     = element_rect(colour = "black", fill=NA, linewidth=0.5))
+    
+  return(clock_plot)
 }
 
 #' ccAFv2 classifier function
@@ -262,7 +363,6 @@ ThresholdPlot = function(seurat_obj, ...) {
 #' 
 #' @param  norm_expVec a double precision 1 x 861 vector of normalized gene expression values
 #' @return  ccAFv2_classifier returns a 1 x 7 double precision vector of class probabilites
-#'
 #' @export
 ccAFv2_classifier <- function(norm_expVec) {
   .Call("C_ccAFv2", norm_expVec)
