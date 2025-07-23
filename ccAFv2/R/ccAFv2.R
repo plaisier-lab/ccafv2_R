@@ -328,8 +328,15 @@ ClockPlot = function(Seurat, plot_title = '') {
   
   meta_data = seurat_obj@meta.data
   
-  thetas   = seq(0,360, 360/7)[1:7] * pi/180
-  ccAFv2_states    = c("Neural G0", "M/Early G1", "G1","Late G1", "S", "S/G2", "G2/M" )
+  if ("Neural G0" %in% meta_data[,'ccAFv2']) {
+    thetas   = seq(0,360, 360/7)[1:7] * pi/180
+    ccAFv2_states    = c("Neural G0", "G1","Late G1", "S", "S/G2", "G2/M", "M/Early G1" )
+  } else{
+    thetas = seq(0,360, 360/5)[1:5] * pi/180
+    ccAFv2_states    = c("G0/G1", "S", "S/G2", "G2/M", "M/Early G1" )
+  }
+  
+ 
   
   clock_lines = data.frame(x = 0, y = 0, xend = cos(thetas), yend = sin(thetas))
   
