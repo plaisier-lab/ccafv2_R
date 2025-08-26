@@ -143,10 +143,10 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     meta_df[which(apply(oup_preds,2,max)<threshold),'ccAFv2'] = 'Unknown'
     
     cat('  Adding probabilities and predictions to metadata\n')
-    seurat_obj = AddMetaData(object = seurat_obj, metadata = meta_df)
+    seurat1 = AddMetaData(object = seurat1, metadata = meta_df)
     
     cat('Done\n')
-    return(seurat_obj)
+    return(seurat1)
 }
 
 #' Adjust Cell Cycle Threshold
