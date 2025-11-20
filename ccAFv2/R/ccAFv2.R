@@ -95,18 +95,18 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
       
     } else {
       
-        max_state = rownames(oup_preds)[apply(oup_preds,2,which.max)]
-        max_state[max_state=='Neural G0'] = 'G0/G1'
-        max_state[max_state=='G1'] = 'G0/G1'
-        max_state[max_state=='Late G1'] = 'G0/G1'
-        CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')),  row.names = colnames(oup_preds) )
-        
-        # Since we are discriminating on g1 we should also calculate the cell angles
-        # Assign theta values for each state but but make the first 3 values 0 because 
-        # all the G0, G1, and Late G1 are consolidated
-        
-        thetas = c(0,0,0,0,0,0,0)
-        thetas[3:7] = seq(0,360, 360/5)[1:5] * pi/180
+      max_state = rownames(oup_preds)[apply(oup_preds,2,which.max)]
+      max_state[max_state=='Neural G0'] = 'G0/G1'
+      max_state[max_state=='G1'] = 'G0/G1'
+      max_state[max_state=='Late G1'] = 'G0/G1'
+      CellCycleState = data.frame(factor(max_state, levels=c('G0/G1','S','S/G2','G2/M','M/Early G1','Unknown')),  row.names = colnames(oup_preds) )
+      
+      # Since we are discriminating on g1 we should also calculate the cell angles
+      # Assign theta values for each state but but make the first 3 values 0 because 
+      # all the G0, G1, and Late G1 are consolidated
+      
+      thetas = c(0,0,0,0,0,0,0)
+      thetas[3:7] = seq(0,360, 360/5)[1:5] * pi/180
     
     }
     cat('  Calculating cell state order...\n')
@@ -215,15 +215,15 @@ PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human
 DimPlot.ccAFv2 = function(seurat_obj, ...) {
   
   label_cmap = c('G1'         = '#f37f73', 
-                 'G2.M'       = '#3db270', 
-                 'Late.G1'    = '#1fb1a9', 
-                 'M.Early.G1' = '#6d90ca', 
-                 'Neural.G0'  = '#d9a428', 
+                 'G2/M'       = '#3db270', 
+                 'Late G1'    = '#1fb1a9', 
+                 'M/Early G1' = '#6d90ca', 
+                 'Neural G0'  = '#d9a428', 
                  'S'          = '#8571b2', 
-                 'S.G2'       = '#db7092', 
+                 'S/G2'       = '#db7092', 
                  'Unknown'    = '#CCCCCC', 
                  'G0/G1'      = '#E34234')
-  
+    cat("DimPlot\n")
     dp1 = DimPlot(seurat_obj, group.by='ccAFv2', cols = label_cmap, ...)
     return(dp1)
 }
@@ -238,12 +238,12 @@ DimPlot.ccAFv2 = function(seurat_obj, ...) {
 SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
   
   label_cmap = c('G1'         = '#f37f73', 
-                 'G2.M'       = '#3db270', 
-                 'Late.G1'    = '#1fb1a9', 
-                 'M.Early.G1' = '#6d90ca', 
-                 'Neural.G0'  = '#d9a428', 
+                 'G2/M'       = '#3db270', 
+                 'Late G1'    = '#1fb1a9', 
+                 'M/Early G1' = '#6d90ca', 
+                 'Neural G0'  = '#d9a428', 
                  'S'          = '#8571b2', 
-                 'S.G2'       = '#db7092', 
+                 'S/G2'       = '#db7092', 
                  'Unknown'    = '#CCCCCC', 
                  'G0/G1'      = '#E34234')
   

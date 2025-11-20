@@ -35,5 +35,6 @@ Icon
 
 # R project files
 *.Rhistory
+*.RData
 *.Rproj
     
