@@ -7,22 +7,21 @@
 #'
 #' The ccAFv2 predicts the cell cycle state for each cell in the object by
 #' selecting the cell cycle state for each cell with the maximum cell cycle
-#' state probability. If the cell cycle state probability for a cell does not
-#' meet the probability threshold, the cell will receive an 'Unknown' cell cycle
-#' state prediction. ccAFv2 cell cycle state predictions and probabilities for
-#' each cell in the object will be stored in the object .obs after classification.
+#' state probability. ccAFv2 cell cycle state predictions and calibrated
+#' probabilities for each cell in the object will be stored in the object
+#' .obs after classification.
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param threshold: the value used to threchold the likelihoods, default is 0.5
-#' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
-#' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
+#' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (TRUE provides Neural G0 calls, FALSE collapses)
+#' @param do_sctransform: whether to do SCTransform before classifying, doing the transform ensures maximal gene coverage, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
 #' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
 #' @param spatial: whether the data is spatial, defaults to FALSE
+#' @param threshold: the value used to threchold the likelihoods, default is 0
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, include_g0 = TRUE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE, threshold=0) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj

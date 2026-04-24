@@ -1,12 +1,12 @@
 # docker run -it -v '/media/old_home/home/cplaisier/ccAFv2_test:/files' cplaisier/ccafv2_seurat5
 
-devtools::install_github("plaisier-lab/ccafv2_R/ccAFv2")
+remotes::install_github("plaisier-lab/ccafv2_R/ccAFv2@calibrated")
 
 library(ccAFv2)
 library(Seurat)
 library(ggplot2)
 
-reticulate:::use_python('/usr/bin/python3')
+#reticulate:::use_python('/usr/bin/python3')
 
 ### Single cell or nuclei
 
