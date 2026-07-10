@@ -1,3 +1,73 @@
+##' Scale the matrix
+#'
+#' Will convert the angles from cell cycle genes into 10 features to compute
+#' the ccAFv2 classifier.
+#'
+#' @param m: matrix to scale, no default
+#' @return scaled matrix
+#' @export
+.scale = function(m) {
+  x = as.matrix(m)
+
+  mu = rowMeans(m)
+  sigma = matrixStats::rowSds(x)
+
+  scaled = sweep(m, 1, mu, "-")
+  scaled = sweep(scaled, 1, sigma, "/")
+
+  return(scaled)
+}
+
+##' Translate angles to vonMises features
+#'
+#' Will convert the angles from cell cycle genes into 10 features to compute
+#' the ccAFv2 classifier.
+#'
+#' @param angles: a vector of angles computed from the cell cycle genes, no default
+#' @param n_bins: number of bins to generate, default is 10 bins
+#' @param kappa: spread of vonMises distribution, default is 4.0
+#' @return dataFrame of feature likelihoods for each bin by the number of cells
+#' @export
+AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
+  stopifnot(is.numeric(angles), n_bins >= 1, kappa >= 0)
+
+  # Wrap to [0, 2*pi)
+  angles = angles %% (2 * pi)
+
+  # Bin edges
+  edges = seq(0, 2 * pi, length.out = n_bins + 1)
+  lefts  = edges[-length(edges)]
+  rights = edges[-1]
+
+  # Vectorized circular von Mises CDF with fixed reference frame
+  pvm0 = function(q, mu, kappa) {
+    as.numeric(circular::pvonmises(
+      q = circular::circular(q),
+      mu = circular::circular(mu),
+      kappa = kappa,
+      from = circular::circular(0)
+    ))
+  }
+
+  # Matrix of probabilities:
+  # rows = input angles, cols = bins
+  prob_mat = sapply(seq_along(angles), function(j) {
+    mu = angles[j]
+
+    probs = pvm0(rights, mu, kappa) - pvm0(lefts, mu, kappa)
+    probs[probs < 0] = probs[probs < 0] + 1
+    probs / sum(probs)
+  })
+
+  # sapply returns bins x angles; transpose to angles x bins
+  prob_mat = t(prob_mat)
+
+  out = as.data.frame(prob_mat)
+  colnames(out) = paste0("bin_", seq_len(n_bins))
+  rownames(out) = NULL
+  return(out)
+}
+
 ##' Predict Cell Cycle
 #'
 #' This function predicts the cell cycle state for each cell in the object
@@ -30,7 +100,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     # Load model and marker genes
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     marker_genes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
-
+    
     
     # Run SCTransform on data being sure to include the marker_genes
     if(assay=='SCT' & do_sctransform) {
@@ -62,25 +132,46 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
         warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
     }
     
-    input_mat_scaled = t(scale(t(as.matrix(input_mat))))
+    input_mat_scaled = t(.scale(t(as.matrix(input_mat))))
 
-    # create the input and output arrays (oup_preds) here with 
+    # Create the input and output arrays (oup_preds) here with 
     # names and dimensions of marker_genes x samples (cols in seurat object 1)
     nscaled_data = matrix(min(input_mat_scaled,na.rm=T),
-                          nrow=length(marker_genes), ncol=ncol(seurat1), 
-                          dimnames = list(marker_genes, colnames(seurat1)))
+                          nrow = length(marker_genes),
+                          ncol = ncol(seurat1), 
+                          dimnames = list(marker_genes,colnames(seurat1)))
 
-    # add in the nromalized expression data from the seurat data set 
+    # Add in the nromalized expression data from the seurat data set 
     nscaled_data[common_genes, ] = input_mat_scaled[common_genes, ]           
     nscaled_data[!is.finite(nscaled_data)] = 0
+
+    # Compute the bins
+    u5_ref = loadRDS(system.file('extdata', 'seurat_ref_U5_hNSC.rds', package='ccAFv2'))
+    cc_genes = read.csv(system.file('extdata', 'ccGenes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
+    rownames(u5_ref) = cc_genes
+    cc_genes_subset = intersect(cc_genes, rownames(input_mat))
+    cc_mat = ProjectCycleFromSeurat(seurat1, u5_ref,
+                                    assay = 'RNA',
+                                    layer = 'scale.data',
+                                    gene_col = 1,
+                                    reduction_name = 'cc_Projection',
+                                    reduction_key = 'CYCLE_',
+                                    position_col = 'thetaPos',
+                                    center.pc1 = 0,
+                                    center.pc2 = 0)
+    binProbs = AnglesToVonMisesBins(seurat1@meta.data$thetaPos)
+    scaledBinProbs = t(.scale(t(binProbs)))
+    
+    # Combine the scaled gene expression data with the scaled bins
+    all_scaled_data = rbind(nscaled_data, scaledBinProbs)
     
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
 
-    # apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
-    oup_preds = apply(nscaled_data, 2, ccAFv2_classifier)
+    # Apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
+    oup_preds = apply(all_scaled_data, 2, ccAFv2_classifier)
     rownames(oup_preds) = classes   
    
-    # organize the predictions into a dataframe and return the foudn cell cycle states
+    # Organize the predictions into a dataframe and return the foudn cell cycle states
     # We need the dataframe with rows as samples hence the transpose here
     df1 = data.frame(t(oup_preds))
     cat(paste0('  Choosing cell cycle state...\n'))
