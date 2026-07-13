@@ -1,8 +1,9 @@
 test_that("projection works", {
   U5_data = readRDS('data/U5_normalized_ensembl.rds')
+  U5_ref = readRDS(system.file("extdata", "seurat_ref_U5_hNSC.rds", package = "ccAFv2"))
   U5_data2 = suppressMessages(suppressWarnings(ProjectCycleFromSeurat(
     U5_data,
-    system.file("extdata", "seurat_ref_U5_hNSC.rds", package = "ccAFv2"),
+    U5_ref,
     assay = 'RNA',
     layer = 'scale.data',
     gene_col = 1,

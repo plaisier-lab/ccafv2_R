@@ -83,7 +83,7 @@ AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
 #' each cell in the object will be stored in the object .obs after classification.
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param threshold: the value used to threchold the likelihoods, default is 0.5
+#' @param threshold: the value used to threchold the likelihoods, default is 0
 #' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
@@ -92,7 +92,7 @@ AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
 #' @param spatial: whether the data is spatial, defaults to FALSE
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj
@@ -146,11 +146,11 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     nscaled_data[!is.finite(nscaled_data)] = 0
 
     # Compute the bins
-    u5_ref = loadRDS(system.file('extdata', 'seurat_ref_U5_hNSC.rds', package='ccAFv2'))
-    cc_genes = read.csv(system.file('extdata', 'ccGenes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
+    u5_ref = readRDS(system.file('extdata', 'seurat_ref_U5_hNSC.rds', package='ccAFv2'))
+    cc_genes = read.csv(system.file('extdata', 'ccGenes.csv', package='ccAFv2'), header=TRUE)[,paste0(species,'_',gene_id)]
     rownames(u5_ref) = cc_genes
     cc_genes_subset = intersect(cc_genes, rownames(input_mat))
-    cc_mat = ProjectCycleFromSeurat(seurat1, u5_ref,
+    seurat1 = ProjectCycleFromSeurat(seurat1, u5_ref,
                                     assay = 'RNA',
                                     layer = 'scale.data',
                                     gene_col = 1,
@@ -161,9 +161,12 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
                                     center.pc2 = 0)
     binProbs = AnglesToVonMisesBins(seurat1@meta.data$thetaPos)
     scaledBinProbs = t(.scale(t(binProbs)))
-    
+
     # Combine the scaled gene expression data with the scaled bins
-    all_scaled_data = rbind(nscaled_data, scaledBinProbs)
+    #print(dim(nscaled_data))
+    #print(dim(scaledBinProbs))
+    all_scaled_data = rbind(nscaled_data, t(scaledBinProbs))
+    #print(dim(all_scaled_data))
     
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
 
@@ -312,7 +315,7 @@ ThresholdPlot = function(seurat_obj, ...) {
 #' This function calls the C code C_ccAFv2.c to run the neural network classifier. 
 #' ccAFv2_classifier returns a 1 x 7 double precision vector of predictions 
 #' 
-#' @param  norm_expVec a double precision 1 x 861 vector of normalized gene expression values
+#' @param  norm_expVec a double precision 1 x 871 vector of normalized gene expression values
 #' @return  ccAFv2_classifier returns a 1 x 7 double precision vector of class probabilites
 #'
 #' @export

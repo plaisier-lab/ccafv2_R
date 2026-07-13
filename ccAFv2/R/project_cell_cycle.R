@@ -142,7 +142,7 @@ ProjectCycleFromMatrix = function(expr, ref.m, center.pc1 = 0, center.pc2 = 0) {
   if (length(genes) == 0) {
     stop('No overlapping genes between the Seurat assay and the reference CSV.')
   }
-  message(paste0("The number of projection genes found in the new data is ", length(genes), "."))
+  message(paste0("    The number of projection genes found in the new data is ", length(genes), "."))
 
   ref.m = ref.m[genes, , drop = FALSE]
   expr  = expr[genes,  , drop = FALSE]
@@ -192,7 +192,7 @@ ProjectCycleFromSeurat = function(
 ) {
   stopifnot(inherits(seurat_obj, 'Seurat'))
 
-  ref.m = readRDS(ref_rds)
+  ref.m = ref_rds
 
   # Properly normalize and scale for projection
   seurat_obj2 = seurat_obj
