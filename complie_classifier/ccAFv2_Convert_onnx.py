@@ -73,14 +73,14 @@ class ccAFv2_Static(nn.Module):
         parent_path = pathlib.Path(__file__).parent
 
         # Load the weight dicts here.
-        class_weight_path = parent_path / 'ccAFv2_RTorch_8.pth'
+        class_weight_path = parent_path / 'ccAFv2_RTorch_3.pth'
         #class_weights = torch.load(class_weight_path, weights_only = True)
         self.classifier.load_state_dict(dict(torch.load(class_weight_path, weights_only = True)))
         self.classifier = remove_dropout(self.classifier)
         self.classifier.eval()
 
 
-        calib_weight_path = parent_path / 'ccAFv2_Rcorr_8.pth'
+        calib_weight_path = parent_path / 'ccAFv2_Rcorr_3.pth'
         #calib_weights = torch.load(calib_weight_path, weights_only = True)
         tmp_dict = dict(torch.load(calib_weight_path, weights_only = True))
         tmp_dict = {k.replace('network','0'):v for k,v in tmp_dict.items()}

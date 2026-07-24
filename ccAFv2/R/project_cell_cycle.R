@@ -166,7 +166,7 @@ ProjectCycleFromMatrix = function(expr, ref.m, center.pc1 = 0, center.pc2 = 0) {
 #' results in a Seurat object
 #'
 #' @param expr: an expression matrix.
-#' @param ref_csv: name of the CSV file for the reference.
+#' @param ref_rds: name of the CSV file for the reference.
 #' @param gene_col: which gene column should be used.
 #' @param assay: which assay in the Seurat object should be exported, default is 'RNA'.
 #' @param layer: which layer in the Seurat object assay should be exported, default is 'data'.
@@ -217,8 +217,9 @@ ProjectCycleFromSeurat = function(
     key = reduction_key,
     assay = assay
   )
-
-  seurat_obj[[position_col]] = res$position[colnames(seurat_obj)]
+  
+  rotation = 0.225 * pi
+  seurat_obj[[position_col]] = (2*pi) - ((res$position[colnames(seurat_obj)] - rotation) %% (2 * pi))
 
   seurat_obj
 }
