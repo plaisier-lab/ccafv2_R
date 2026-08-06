@@ -48,7 +48,7 @@
 #' This function will collect the gene expression data from a Seurat object.
 #'
 #' @param seurat_obj: the Seurat object.
-#' @param assay: which assay in the Seurat object should be exported, default is 'RNA'.
+#' @param assay: which assay in the Seurat object should be exported, default is 'SCT'.
 #' @param layer: which layer in the Seurat object assay should be exported, default is 'data'.
 #' @param gname: list of gene ids as input, or use Seurat rownames if NULL, default is NULL.
 #' @param gname.type: gene id type, either ENSEMBL or SYMBOL, no default.
@@ -99,30 +99,27 @@ RunPCACCGenes = function(seurat_obj,
 #' This function will collect the gene expression data from a Seurat object.
 #'
 #' @param seurat_obj: the Seurat object.
-#' @param assay: which assay in the Seurat object should be exported, default is 'RNA'.
+#' @param assay: which assay in the Seurat object should be exported, default is 'SCT'.
 #' @param layer: which layer in the Seurat object assay should be exported, default is 'data'.
 #' @return Seurat expression data.
 #' @export
 #' 
-GetSeuratExpr = function(seurat_obj, assay = 'RNA', layer = 'data') {
-  if (requireNamespace('SeuratObject', quietly = TRUE) &&
-      'LayerData' %in% getNamespaceExports('SeuratObject')) {
-    return(SeuratObject::LayerData(seurat_obj, assay = assay, layer = layer))
+GetSeuratExpr = function(seurat_obj, assay = 'SCT', layer = 'scale.data') {
+  if (packageVersion('SeuratObject') >= '5.0.0') {
+     # Seurat v5
+     return(LayerData(
+         object = seurat_obj,
+         assay = assay,
+         layer = layer
+     ))
+  } else {
+     # Seurat v4
+     return(GetAssayData(
+         object = seurat_obj,
+         assay = assay,
+         slot = layer
+     ))
   }
-
-  if (requireNamespace('Seurat', quietly = TRUE) &&
-      'GetAssayData' %in% getNamespaceExports('Seurat')) {
-    out = tryCatch(
-      Seurat::GetAssayData(seurat_obj, assay = assay, layer = layer),
-      error = function(e) NULL
-    )
-    if (!is.null(out)) return(out)
-
-    # legacy fallback
-    return(Seurat::GetAssayData(seurat_obj, assay = assay, slot = layer))
-  }
-
-  stop('Could not extract assay data from the Seurat object.')
 }
 
 
@@ -168,7 +165,7 @@ ProjectCycleFromMatrix = function(expr, ref.m, center.pc1 = 0, center.pc2 = 0) {
 #' @param expr: an expression matrix.
 #' @param ref_rds: name of the CSV file for the reference.
 #' @param gene_col: which gene column should be used.
-#' @param assay: which assay in the Seurat object should be exported, default is 'RNA'.
+#' @param assay: which assay in the Seurat object should be exported, default is 'SCT'.
 #' @param layer: which layer in the Seurat object assay should be exported, default is 'data'.
 #' @param reduction_name: name of the reduction we generate using the projection.
 #' @param reduction_key: string that should be prepended to reduction variable names.
@@ -181,7 +178,7 @@ ProjectCycleFromMatrix = function(expr, ref.m, center.pc1 = 0, center.pc2 = 0) {
 ProjectCycleFromSeurat = function(
   seurat_obj,
   ref_rds,
-  assay = 'RNA',
+  assay = 'SCT',
   layer = 'scale.data',
   gene_col = 1,
   reduction_name = 'cc_Projection',
@@ -195,11 +192,7 @@ ProjectCycleFromSeurat = function(
   ref.m = ref_rds
 
   # Properly normalize and scale for projection
-  seurat_obj2 = seurat_obj
-  Seurat::DefaultAssay(seurat_obj2) = 'RNA'
-  seurat_obj2 = Seurat::NormalizeData(seurat_obj2, verbose = F)
-  seurat_obj2 = Seurat::ScaleData(seurat_obj2, verbose = F)
-  expr = GetSeuratExpr(seurat_obj2, assay = assay, layer = layer)
+  expr = GetSeuratExpr(seurat_obj, assay = assay, layer = layer)
 
   res = ProjectCycleFromMatrix(
     expr = expr,
@@ -207,7 +200,7 @@ ProjectCycleFromSeurat = function(
     center.pc1 = center.pc1,
     center.pc2 = center.pc2
   )
-
+  
   if (!requireNamespace('SeuratObject', quietly = TRUE)) {
     stop('SeuratObject is required to store the reduction back into the object.')
   }
@@ -219,7 +212,7 @@ ProjectCycleFromSeurat = function(
   )
   
   rotation = 0.225 * pi
-  seurat_obj[[position_col]] = (2*pi) - ((res$position[colnames(seurat_obj)] - rotation) %% (2 * pi))
+  seurat_obj[[position_col]] = unlist(sapply(res$position, function(x) { (2*pi) - ((x - rotation) %% (2 * pi)) }))
 
   seurat_obj
 }

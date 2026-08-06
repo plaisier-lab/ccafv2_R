@@ -132,7 +132,7 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
         warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
     }
     
-    input_mat_scaled = t(.scale(t(as.matrix(input_mat))))
+    input_mat_scaled = .scale(as.matrix(input_mat))
 
     # Create the input and output arrays (oup_preds) here with 
     # names and dimensions of marker_genes x samples (cols in seurat object 1)
@@ -145,13 +145,11 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
     nscaled_data[common_genes, ] = input_mat_scaled[common_genes, ]           
     nscaled_data[!is.finite(nscaled_data)] = 0
 
-    # Compute the bins
-    u5_ref = readRDS(system.file('extdata', 'seurat_ref_U5_hNSC_SCT.rds', package='ccAFv2'))
-    cc_genes = read.csv(system.file('extdata', 'ccGenes.csv', package='ccAFv2'), header=TRUE)[,paste0(species,'_',gene_id)]
-    rownames(u5_ref) = cc_genes
-    cc_genes_subset = intersect(cc_genes, rownames(input_mat))
+
+    ## Compute the bins
+    u5_ref = readRDS(system.file('extdata', 'seurat_ref_U5_hNSC_SCT_7_29_2026.rds', package='ccAFv2'))
     seurat1 = ProjectCycleFromSeurat(seurat1, u5_ref,
-                                    assay = 'RNA',
+                                    assay = 'SCT',
                                     layer = 'scale.data',
                                     gene_col = 1,
                                     reduction_name = 'cc_Projection',
@@ -163,10 +161,7 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
     scaledBinProbs = t(.scale(t(binProbs)))
 
     # Combine the scaled gene expression data with the scaled bins
-    print(head(nscaled_data))
-    print(head(scaledBinProbs))
     all_scaled_data = rbind(nscaled_data, t(scaledBinProbs))
-    print(head(all_scaled_data))
     
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
 
