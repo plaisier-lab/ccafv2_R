@@ -148,6 +148,9 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
 
     ## Compute the bins
     u5_ref = readRDS(system.file('extdata', 'seurat_ref_U5_hNSC_SCT_7_29_2026.rds', package='ccAFv2'))
+    # Make sure gene ids are consistent
+    u5_ref_rownames = read.csv(system.file('extdata', 'rownames_u5_ref.csv', package='ccAFv2'), header=TRUE)[,paste0(species,'_',gene_id)]
+    rownames(u5_ref) = u5_ref_rownames
     seurat1 = ProjectCycleFromSeurat(seurat1, u5_ref,
                                     assay = assay,
                                     layer = 'scale.data',
