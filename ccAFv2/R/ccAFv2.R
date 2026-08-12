@@ -92,7 +92,7 @@ AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
 #' @param spatial: whether the data is spatial, defaults to FALSE
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', layer = 'scale.data', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj
@@ -154,7 +154,7 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
     print(u5_ref)
     seurat1 = ProjectCycleFromSeurat(seurat1, u5_ref,
                                     assay = assay,
-                                    layer = 'scale.data',
+                                    layer = layer,
                                     gene_col = 1,
                                     reduction_name = 'cc_Projection',
                                     reduction_key = 'CYCLE_',
