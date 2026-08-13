@@ -117,7 +117,7 @@ PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctr
 
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(marker_genes),'\n'))
-    input_mat = GetSeuratExpression(seurat1, assay = assay, layer = layer)
+    input_mat = GetSeuratExpr(seurat1, assay = assay, layer = layer)
     input_mat = input_mat[common_genes,]
     #if(assay=='SCT') {
     #    input_mat = seurat1@assays$SCT@scale.data[common_genes,]
