@@ -7,10 +7,10 @@ nav_order: 3
 
 The ccAFv2 package is designed to work alongside [Seurat](https://satijalab.org/seurat), and makes predictions from and stores results into Seurat objects. It is suggested that the latest version of Seurat be installed. The classifier has been tested on Seurat version 5.3.1.
 
-Installation of ccAFv2 from github is facilitated by the [remotes](https://cran.r-project.org/web/packages/remotes/index.html) package. Finally, for plotting we require installation of the [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package.
+Installation of ccAFv2 from github is facilitated by the [remotes](https://cran.r-project.org/web/packages/remotes/index.html) package. For plotting we require installation of the [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package. Finally, for calculating the angular bins we require installation of the [circular](https://cran.r-project.org/web/packages/circular/index.html) package.
 
 ```r
-install.packages(c('Seurat', 'remotes', 'ggplot2'))
+install.packages(c('Seurat', 'remotes', 'ggplot2', 'circular'))
 ```
 
 #  Installation
@@ -21,7 +21,7 @@ Installation of ccAFv2 in R is very simple and has very few requirements:
 remotes::install_github('plaisier-lab/ccafv2_R/ccAFv2')
 ```
 
-## Dockerfile and image
+<!-- ## Dockerfile and image
 
 For those who are interested we also provide a Dockerfile and image that include all depdencies:
 
@@ -39,5 +39,5 @@ Command to run the docker image. Note that the <replace with the location to you
 ```sh
 docker run -it -v '<replace with the location for your files>:/files' cplaisier/ccafv2
 ```
-
+-->
 

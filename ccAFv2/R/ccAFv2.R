@@ -87,6 +87,7 @@ AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
 #' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
+#' @param layer: which seurat_obj assay layer to use for classification, default is 'scale.data'
 #' @param species: from which species did the samples originate, either 'human' or 'mouse', defaults to 'human'
 #' @param gene_id: what type of gene ID is used, either 'ensembl' or 'symbol', defaults to 'ensembl'
 #' @param spatial: whether the data is spatial, defaults to FALSE
