@@ -9,12 +9,15 @@ Most transcriptomic cell-cycle classifiers combine quiescent G0 and G1 cells and
 ![F6.large]({{ site.baseurl }}/images/F6.large.jpg)
 
 The ccAFv2 classifier builds on the foundation established by its predecessor (ccAFv1, O'Connor et al. 2021). ccAFv2 compares well against existing cell cycle state classifiers: ccAF (v1) (O'Connor et al. 2021), Seurat (Hao et al. 2021), Tricycle (Zheng et al. 2022), SchwabeCC (Schwabe et al. 2020; Zheng et al. 2022), reCAT (Liu et al. 2017), Peco (Hsiao et al. 2020) and Cyclone (Scialdone et al. 2015). 
+
 ![F2.large]({{ site.baseurl }}/images/F2.large.png)
 
 To improve machine learning classification of cell cycle states, we developed a probabilistic approach to represent each cell's position along the circular cell cycle manifold. By encoding angular positions as probability distributions across equally sized bins, this method preserves circular continuity while accounting for uncertainty in cell positioning. We evaluated multiple binning resolutions and found that 10 angular bins provided an optimal balance of resolution, model stability, and interpretability. Increasing the resolution to 36 bins did not significantly improve classification performance, supporting the selection of 10 bins for the final ccAFv2 classifier.
+
 ![F3.large]({{ site.baseurl }}/images/F3.large.png)
 
 The core algorithm of the ccAFv2 is a fully connected artificial neural network (ANN) implemented using the PyTorch (v2.2.1) to construct ANNs. It takes the expression levels of 861 highly variable genes and 10 angular bins as input and classifies cells into seven distinct cell cycle states: Neural G0, G1, Late G1, S, S/G2, G2/M, and M/Early G1. The model incorporates dropout layers to prevent overfitting and uses Stochastic Gradient Descent (SGD) for optimization. The result is a powerful, flexible tool for analyzing cell cycle dynamics.
+
 ![F1.large]({{ site.baseurl }}/images/F1.large.png)
 
 ### References 
