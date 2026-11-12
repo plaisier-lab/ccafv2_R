@@ -1,3 +1,73 @@
+##' Scale the matrix
+#'
+#' Will convert the angles from cell cycle genes into 10 features to compute
+#' the ccAFv2 classifier.
+#'
+#' @param m: matrix to scale, no default
+#' @return scaled matrix
+#' @export
+.scale = function(m) {
+  x = as.matrix(m)
+
+  mu = rowMeans(m)
+  sigma = matrixStats::rowSds(x)
+
+  scaled = sweep(m, 1, mu, "-")
+  scaled = sweep(scaled, 1, sigma, "/")
+
+  return(scaled)
+}
+
+##' Translate angles to vonMises features
+#'
+#' Will convert the angles from cell cycle genes into 10 features to compute
+#' the ccAFv2 classifier.
+#'
+#' @param angles: a vector of angles computed from the cell cycle genes, no default
+#' @param n_bins: number of bins to generate, default is 10 bins
+#' @param kappa: spread of vonMises distribution, default is 4.0
+#' @return dataFrame of feature likelihoods for each bin by the number of cells
+#' @export
+AnglesToVonMisesBins = function(angles, n_bins = 10, kappa = 4.0) {
+  stopifnot(is.numeric(angles), n_bins >= 1, kappa >= 0)
+
+  # Wrap to [0, 2*pi)
+  angles = angles %% (2 * pi)
+
+  # Bin edges
+  edges = seq(0, 2 * pi, length.out = n_bins + 1)
+  lefts  = edges[-length(edges)]
+  rights = edges[-1]
+
+  # Vectorized circular von Mises CDF with fixed reference frame
+  pvm0 = function(q, mu, kappa) {
+    as.numeric(circular::pvonmises(
+      q = circular::circular(q),
+      mu = circular::circular(mu),
+      kappa = kappa,
+      from = circular::circular(0)
+    ))
+  }
+
+  # Matrix of probabilities:
+  # rows = input angles, cols = bins
+  prob_mat = sapply(seq_along(angles), function(j) {
+    mu = angles[j]
+
+    probs = pvm0(rights, mu, kappa) - pvm0(lefts, mu, kappa)
+    probs[probs < 0] = probs[probs < 0] + 1
+    probs / sum(probs)
+  })
+
+  # sapply returns bins x angles; transpose to angles x bins
+  prob_mat = t(prob_mat)
+
+  out = as.data.frame(prob_mat)
+  colnames(out) = paste0("bin_", seq_len(n_bins))
+  rownames(out) = NULL
+  return(out)
+}
+
 ##' Predict Cell Cycle
 #'
 #' This function predicts the cell cycle state for each cell in the object
@@ -13,7 +83,7 @@
 #' each cell in the object will be stored in the object .obs after classification.
 #'
 #' @param seurat0: a seurat object must be supplied to classify, no default
-#' @param threshold: the value used to threchold the likelihoods, default is 0.5
+#' @param threshold: the value used to threchold the likelihoods, default is 0
 #' @param include_g0: whether to provide Neural G0 calls, or collapse G1, Late G1 and Neural G0 into G0/G1 (FALSE collapses, TRUE provides Neural G0 calls)
 #' @param do_sctransform: whether to do SCTransform before classifying, default is TRUE
 #' @param assay: which seurat_obj assay to use for classification, helpful if data is prenormalized, default is 'SCT'
@@ -22,7 +92,7 @@
 #' @param spatial: whether the data is spatial, defaults to FALSE
 #' @return Seurat object with ccAFv2 calls and probabilities for each cell cycle state
 #' @export
-PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', species='human', gene_id='ensembl', spatial = FALSE) {
+PredictCellCycle = function(seurat_obj, threshold=0, include_g0 = FALSE, do_sctransform=TRUE, assay='SCT', layer = 'scale.data', species='human', gene_id='ensembl', spatial = FALSE) {
     cat('Running ccAFv2:\n')
     # Make a copy of object
     seurat1 = seurat_obj
@@ -30,7 +100,7 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
     # Load model and marker genes
     classes = read.csv(system.file('extdata', 'ccAFv2_classes.txt', package='ccAFv2'), header=FALSE)$V1
     marker_genes = read.csv(system.file('extdata', 'ccAFv2_genes.csv', package='ccAFv2'), header=TRUE, row.names=1)[,paste0(species,'_',gene_id)]
-
+    
     
     # Run SCTransform on data being sure to include the marker_genes
     if(assay=='SCT' & do_sctransform) {
@@ -47,11 +117,13 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
 
     # Find missing genes and assign 0s to each cell
     cat(paste0('  Total possible marker genes for this classifier: ', length(marker_genes),'\n'))
-    if(assay=='SCT') {
-        input_mat = seurat1@assays$SCT@scale.data[common_genes,]
-    } else {
-        input_mat = seurat1@assays$RNA@data[common_genes,]
-    }
+    input_mat = GetSeuratExpr(seurat1, assay = assay, layer = layer)
+    input_mat = input_mat[common_genes,]
+    #if(assay=='SCT') {
+    #    input_mat = seurat1@assays$SCT@scale.data[common_genes,]
+    #} else {
+    #    input_mat = seurat1@assays$RNA@data[common_genes,]
+    #}
 
     missing_genes = setdiff(marker_genes, rownames(input_mat))
     
@@ -62,25 +134,47 @@ PredictCellCycle = function(seurat_obj, threshold=0.5, include_g0 = FALSE, do_sc
         warning("Overlap below 80%: try setting 'do_sctransform' parameter to TRUE.")
     }
     
-    input_mat_scaled = t(scale(t(as.matrix(input_mat))))
+    input_mat_scaled = .scale(as.matrix(input_mat))
 
-    # create the input and output arrays (oup_preds) here with 
+    # Create the input and output arrays (oup_preds) here with 
     # names and dimensions of marker_genes x samples (cols in seurat object 1)
     nscaled_data = matrix(min(input_mat_scaled,na.rm=T),
-                          nrow=length(marker_genes), ncol=ncol(seurat1), 
-                          dimnames = list(marker_genes, colnames(seurat1)))
+                          nrow = length(marker_genes),
+                          ncol = ncol(seurat1), 
+                          dimnames = list(marker_genes,colnames(seurat1)))
 
-    # add in the nromalized expression data from the seurat data set 
+    # Add in the nromalized expression data from the seurat data set 
     nscaled_data[common_genes, ] = input_mat_scaled[common_genes, ]           
     nscaled_data[!is.finite(nscaled_data)] = 0
+
+
+    ## Compute the bins
+    u5_ref = readRDS(system.file('extdata', 'seurat_ref_U5_hNSC_SCT_7_29_2026.rds', package='ccAFv2'))
+    # Make sure gene ids are consistent
+    u5_ref_rownames = read.csv(system.file('extdata', 'rownames_u5_ref.csv', package='ccAFv2'), header=TRUE)[,paste0(species,'_',gene_id)]
+    rownames(u5_ref) = u5_ref_rownames
+    seurat1 = ProjectCycleFromSeurat(seurat1, u5_ref,
+                                    assay = assay,
+                                    layer = layer,
+                                    gene_col = 1,
+                                    reduction_name = 'cc_Projection',
+                                    reduction_key = 'CYCLE_',
+                                    position_col = 'thetaPos',
+                                    center.pc1 = 0,
+                                    center.pc2 = 0)
+    binProbs = AnglesToVonMisesBins(seurat1@meta.data$thetaPos)
+    scaledBinProbs = t(.scale(t(binProbs)))
+
+    # Combine the scaled gene expression data with the scaled bins
+    all_scaled_data = rbind(nscaled_data, t(scaledBinProbs))
     
     cat(paste0('  Predicting cell cycle state probabilities...\n'))
 
-    # apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
-    oup_preds = apply(nscaled_data, 2, ccAFv2_classifier)
+    # Apply classifier to normalized and scaled data.  Then give the resulting output (oup) row names
+    oup_preds = apply(all_scaled_data, 2, ccAFv2_classifier)
     rownames(oup_preds) = classes   
    
-    # organize the predictions into a dataframe and return the foudn cell cycle states
+    # Organize the predictions into a dataframe and return the foudn cell cycle states
     # We need the dataframe with rows as samples hence the transpose here
     df1 = data.frame(t(oup_preds))
     cat(paste0('  Choosing cell cycle state...\n'))
@@ -185,7 +279,7 @@ DimPlot.ccAFv2 = function(seurat_obj, ...) {
 #' @return A DimPlot object that can be plotted.
 #' @export
 SpatialDimPlot.ccAFv2 = function(seurat_obj, ...) {
-    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', ' Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600'), ...)
+    dp1 = SpatialDimPlot(seurat_obj, group.by='ccAFv2', cols = c('G1' = '#f37f73', 'G2/M' = '#3db270', 'Late G1' = '#1fb1a9','M/Early G1' = '#6d90ca', 'Neural G0' = '#d9a428', 'S' = '#8571b2', 'S/G2' = '#db7092', 'G0/G1' = '#FF6600'), ...)
     return(dp1)
 }
 
@@ -221,7 +315,7 @@ ThresholdPlot = function(seurat_obj, ...) {
 #' This function calls the C code C_ccAFv2.c to run the neural network classifier. 
 #' ccAFv2_classifier returns a 1 x 7 double precision vector of predictions 
 #' 
-#' @param  norm_expVec a double precision 1 x 861 vector of normalized gene expression values
+#' @param  norm_expVec a double precision 1 x 871 vector of normalized gene expression values
 #' @return  ccAFv2_classifier returns a 1 x 7 double precision vector of class probabilites
 #'
 #' @export
