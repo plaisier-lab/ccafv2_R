@@ -87,5 +87,8 @@ DimPlot.ccAFv2(seurat_obj)
 
 ## Validation
 In our manuscript we used an iLISI score to determine the impact of cell cycle regression on cell cycle state cohesion. Regression with ccAFv2 outperformed ccSeurat and achieved near ideal performance.
+
+
 ![RegressionFigure]({{ site.baseurl }}/images/regression.png)
+
 **Fig legend.** ccAFv2 identifies growth factor-associated cell-cycle structure in BT237 oligodendroglioma cells and enables cell-cycle regression. **A,B.** UMAP embeddings of grade 3 oligodendroglioma BT237 cells cultured with (A) and without (B) growth factors, colored by predicted ccAFv2 cell-cycle state. **C.** Relative proportions of ccAFv2-predicted cell-cycle states in BT237 cells cultured with or without growth factors. **D,E.** UMAP embeddings of BT237 cells cultured with growth factors after regressing out cell-cycle effects using predictions from ccAFv2 (D) or ccSeurat (E). **F.** Quantification of cell-cycle state mixing before and after cell-cycle regression using iLISI scores. Violin plots show the distribution of iLISI scores for each condition, with white dots indicating medians. The dashed line indicates the empirically determined maximum expected mixing, defined as the median iLISI score obtained from 100 permutations of cell-cycle state labels in BT237. w/ = with; w/o = without; GF = growth factors; perc. = percent; iLISI = integrated Local Inverse Simpson's Index; Perm. = permuted.
