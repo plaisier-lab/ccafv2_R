@@ -52,28 +52,34 @@ png('BT237_GF_UMAP.png', width = 400, height = 400)
 DimPlot.ccAFv2(seurat_obj)
 dev.off()
 ```
-
 The resulting UMAP shows a significant cell cycle bias:
 ![PreRegression_Dimplot]({{ site.baseurl }}/images/BT237_GF_UMAP.png)
-
 
 # Cell Cycle Regression
 Since the cell cycle significantly impacts gene expression, it is common practice to remove its effects and use the residual variance for further analysis. We support this using ccAFv2 marker genes, starting by calculating expression module scores for G0, Late G1, S, S/G2, G2/M, and M/Early G1 phases.
 
 ## Prepare For Cell Cycle Regression
 ```r
-#Collect expression module scores for the cell cycle states 
 seurat_obj = PrepareForCellCycleRegression(seurat_obj)
+```
 
-#Regress these signatures out of the expression data
+## Conduct Cell Cycle Regression
+```
 seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Neural.G0","Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
 ```
 
+## See the Impact of Cell Cycle Regression
 Removing the cell cycle from the BT237 tumor cells leads to an intersting multiprong distribution.
 
+### Redo the UMAP After Regression
+It is important to the redo the UMAP after regressing out the cell cycle to see what impact the cell cycle regression has had on the data.
 ```r
 seurat_obj = RunPCA(seurat_obj)
 seurat_obj = RunUMAP(seurat_obj, dims=1:10)
+```
+
+### Plot After Regression
+```r
 DimPlot.ccAFv2(seurat_obj)
 ```
 
