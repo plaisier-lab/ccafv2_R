@@ -256,7 +256,7 @@ PrepareForCellCycleRegression = function(seurat_obj, assay='SCT', species='human
     for (cluster in c('Late.G1','S','S.G2','G2.M','M.Early.G1')) {
         cluster_genes[[cluster]] = marker_genes[marker_genes[,cluster]==1,paste(species,gene_id,sep='_')]
     }
-    seurat_obj = AddModuleScore(seurat_obj, features = cluster_genes, name = paste0(c('Late.G1','S','S.G2','G2.M','M.Early.G1'), '_exprs'))
+    seurat_obj = AddModuleScore(seurat_obj, assay = assay, features = cluster_genes, name = paste0(c('Late.G1','S','S.G2','G2.M','M.Early.G1'), '_exprs'))
     return(seurat_obj)
 }
 
