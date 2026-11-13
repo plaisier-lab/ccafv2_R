@@ -19,18 +19,24 @@ An example QC pipeline used on the U5 human neural stem cell (hNSC) dataset is a
 
 The Human Skeletal Muscle Satellite Cells (HSkMSC) dataset used to test the ccAFv2 is
 available
-[here](https://zenodo.org/records/24207046/files/HSkMSC_cr_normalized_ensembl.rds?download=).
+[here](https://zenodo.org/records/24207612/files/HSkMSC_cr_normalized_ensembl.rds?download=).
 This data has been QC'd and normalized using SCTransform following our
 best practices described above.
+
 ### Load packages 
 ```r
 library(ccAFv2)
 library(Seurat)
 ```
 
+### Download sample data
+```r
+download.file(url="https://zenodo.org/records/24207612/files/HSkMSC_cr_normalized_ensembl.rds?download=1", destfile="U5_normalized_ensembl.rds", mode="wb")
+```
+
 ### Load in sample data
 ```r
-seurat_obj = readRDS('hSkMSC_normalized_ensembl.rds')
+seurat_obj = readRDS('HSkMSC_cr_normalized_ensembl.rds')
 ```
 
 ## Predicting cell-cycle states
@@ -42,6 +48,7 @@ seurat_obj = PredictCellCycle(seurat_obj,
                  include_g0 = FALSE,
                  do_sctransform=TRUE,
                  assay='SCT',
+                 layer='scale.data,
                  species='human',
                  gene_id='ensembl',
                  spatial = FALSE)
@@ -61,7 +68,7 @@ Running ccAFv2:
 Done
 ```
 
-# Cell Cycle Classification Results
+### Cell Cycle Classification Results
 
 The results of the cell cycle classification are stored in the Seurat
 object metadata. The likelihoods for each cell cycle state can be found
@@ -125,7 +132,7 @@ table(seurat_obj@meta.data$ccAFv2)
 ```
 
 
-# Setup to plot a UMAP
+## Setup to plot a UMAP
 This data object doesn't yet have UMAP dimensionality reduction applied to it. We will do that using the code below:
 ```r
 seurat_obj = RunPCA(seurat_obj)
@@ -134,7 +141,7 @@ seurat_obj = RunUMAP(seurat_obj, dims=1:10)
 ```
 
 
-# Plotting Cell Cycle States
+## Plotting Cell Cycle States
 Plot a UMAP with cell cycle states
 ```r
 DimPlot.ccAFv2(seurat_obj)
