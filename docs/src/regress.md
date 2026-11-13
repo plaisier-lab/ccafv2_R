@@ -4,16 +4,61 @@ title: Cell Cycle Regression
 nav_order: 10
 
 ---
+# Characterizing Grade 3 Oligodendroglioma
+We characterized the transcriptomes of cells from a grade 3 oligodendroglioma (Garcia et al. 2026) cultured in vitro using our standrd single cell pipeline: [predict the cell cycle]([https://plaisier-lab.github.io/ccafv2_R/src/single.html)
+
+```r
+# Load libraries
+library(ccAFv2)
+library(Seurat)
+
+# Set working directory
+setwd('/files/U5_test')
+
+# Download data file
+download.file(url="https://zenodo.org/records/24207612/files/BT237_GF_normalized_ensembl.rds?download=1", destfile="BT237_GF_normalized_ensembl.rds", mode="wb")
+
+# Load up sample data
+seurat_obj = readRDS('BT237_GF_normalized_ensembl.rds')
+
+# Run ccAFv2
+seurat_obj = PredictCellCycle(seurat_obj,
+                 threshold=0,
+                 include_g0 = TRUE,
+                 do_sctransform=TRUE,
+                 assay='SCT',
+                 layer = 'scale.data',
+                 species='human',
+                 gene_id='ensembl',
+                 spatial = FALSE)
+
+# Check to ensure 'ccAFv2' column exists
+colnames(seurat_obj@meta.data)
+
+# Show the first few rows of meta.data to see the likelihood estimates for each
+# state, and ccAFv2 predictions in the 'ccAFv2' column
+head(seurat_obj@meta.data)
+
+# Number of cells in each cell cycle state
+table(seurat_obj@meta.data$ccAFv2)
+
+# Setup to plot a UMAP
+seurat_obj = RunPCA(seurat_obj)
+seurat_obj = FindNeighbors(seurat_obj)
+seurat_obj = RunUMAP(seurat_obj, dims=1:10)
+
+# Plot the UMAP with ccAFv2 predicitions
+png('BT237_GF_UMAP.png', width = 400, height = 400)
+DimPlot.ccAFv2(seurat_obj)
+dev.off()
+```
+
+The resulting UMAP shows a significant cell cycle bias:
+![PreRegression_Dimplot]({{ site.baseurl }}/images/BT237_GF_UMAP.png)
+
+
 # Cell Cycle Regression
-After using ccAFv2 to [predict the cell cycle]([https://plaisier-lab.github.io/ccafv2_R/src/single.html), 
-the cell cycle signal can be regressed out. Since the cell cycle significantly impacts gene expression, it is common practice to remove its effects and
-use the residual variance for further analysis. We support this using ccAFv2 marker genes, starting by
-calculating expression module scores for G0, Late G1, S, S/G2, G2/M, and
-M/Early G1 phases.
-
-## Before Regression  
-![Dimplot_1]({{ site.baseurl }}/images/DimPlot_1.jpeg)
-
+Since the cell cycle significantly impacts gene expression, it is common practice to remove its effects and use the residual variance for further analysis. We support this using ccAFv2 marker genes, starting by calculating expression module scores for G0, Late G1, S, S/G2, G2/M, and M/Early G1 phases.
 
 ## Prepare For Cell Cycle Regression
 ```r
@@ -23,12 +68,13 @@ seurat_obj = PrepareForCellCycleRegression(seurat_obj)
 #Regress these signatures out of the expression data
 seurat_obj = SCTransform(seurat_obj, vars.to.regress = c("Neural.G0","Late.G1_exprs1", "S_exprs2", "S.G2_exprs3", "G2.M_exprs4", "M.Early.G1_exprs5"))
 ```
-Removing the cell cycle from the U5 hNSCs leads to a random distribution
-because the cell cycle is the primary biological signal in this in
-vitro-grown cell line.
+
+Removing the cell cycle from the BT237 tumor cells leads to an intersting multiprong distribution.
+
 ```r
 seurat_obj = RunPCA(seurat_obj)
 seurat_obj = RunUMAP(seurat_obj, dims=1:10)
 DimPlot.ccAFv2(seurat_obj)
 ```
-![Dimplot_2]({{ site.baseurl }}/images/DimPlot_2.jpeg)
+
+![AfterRegression]({{ site.baseurl }}/images/BT237_umap_regressOut.png)
