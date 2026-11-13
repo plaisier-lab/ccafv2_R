@@ -90,7 +90,3 @@ DimPlot.ccAFv2(seurat_obj)
 Cell cycle state likelihoods must meet or exceed the threshold; otherwise, cells are classified as “Unknown.” The removal of less certain classifications improves the accuracy of the overall classifications. 
 For this dataset a likelihood threshold of ≥ 0.4 because it signifies a minimum of 60% certainty in the classified cell cycle state and >90% of cells could be assigned a cell cycle state. Users can adjust the threshold to suit specific datasets.
 
-```r
-ThresholdPlot(seurat_obj)
-```
-![ThresholdPlot_1]({{ site.baseurl }}/images/ThresholdPlot_1_HSkMSC_seurat_obj_filtered_SCT.png)

@@ -1,4 +1,5 @@
 ---
+
 layout: default
 title: Classifying Spatial RNA-seq
 nav_order: 9
@@ -24,7 +25,7 @@ best practices described above.
 
 # Cell Cycle Classification
 
-```
+```r
 library(ccAFv2)
 library(Seurat)
 spatial_obj = readRDS('GSM6736780_Spatial_10x_PCW4_20220122_slice1.rds')
@@ -39,7 +40,7 @@ onto tissue slice images taken before sequencing. We use an enhanced
 This function supports all **SpatialDimPlot** parameters except
 **group.by** and **cols**.
 
-```
+```r
 library(ggplot2)
 SpatialDimPlot.ccAFv2(spatial_obj) + theme(legend.position = "right")
 
