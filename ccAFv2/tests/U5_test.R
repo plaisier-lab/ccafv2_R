@@ -40,7 +40,7 @@ seurat_obj = readRDS('U5_normalized_ensembl.rds')
 
 # Run ccAFv2
 seurat_obj = PredictCellCycle(seurat_obj,
-                 threshold=0.5,
+                 threshold=0,
                  include_g0 = TRUE,
                  do_sctransform=TRUE,
                  assay='SCT',
