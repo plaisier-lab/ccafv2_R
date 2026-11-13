@@ -18,7 +18,7 @@ has_toc: false
   - **[AdjustCellCycleThreshold](https://plaisier-lab.github.io/ccafv2_R/src/AdjustCellCycleThreshold.html)**  
     Re-assign states based on a new prediction confidence threshold.
 
---!>
+-->
     
 ### Data Preparation For Cell Cycle Regression 
   -  **[PrepareForCellCycleRegression](https://plaisier-lab.github.io/ccafv2_R/src/PrepareForCellCycleRegression.html)**  
@@ -35,5 +35,5 @@ has_toc: false
   - **[ThresholdPlot](https://plaisier-lab.github.io/ccafv2_R/src/ThresholdPlot.html)**  
     Visualize how prediction thresholds affect state assignment.  
 
---!>
+-->
 
