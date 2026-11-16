@@ -47,9 +47,8 @@ spatial_obj = PredictCellCycle(spatial_obj,
                                spatial=TRUE)
 
 # Plot SpatialDimPlot
-png('spatial_dim_plot.png', height = 800, width = 800) #, height = 400, width = 400)
+png('spatial_dim_plot.png', height = 800, width = 800)
 p = SpatialDimPlot.ccAFv2(spatial_obj)
-#p@layers[[1]]$aes_params$size = 10
 print(p)
 dev.off()
 
@@ -61,9 +60,8 @@ spatial_obj = PredictCellCycle(spatial_obj,
                                spatial=TRUE)
 
 # Plot SpatialDimPlot
-png('spatial_dim_plot_wG0.png', height = 800, width = 800) #, height = 400, width = 400)
+png('spatial_dim_plot_wG0.png', height = 800, width = 800) 
 p = SpatialDimPlot.ccAFv2(spatial_obj)
-#p@layers[[1]]$aes_params$size = 10
 print(p)
 dev.off()
 
