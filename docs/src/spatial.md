@@ -67,7 +67,7 @@ SpatialDimPlot for slice 1 of a mouse fetus colorized using the cell cycle state
 
 SpatialDimPlot for slice 1 of a mouse fetus colorized using the cell cycle states that combine G0 and G1 states.
 
-![ccAFv2_SpatialDimPlot_G0]({{ site.baseurl }}/images/spatial_dim_plot_WG0.png)
+![ccAFv2_SpatialDimPlot_G0]({{ site.baseurl }}/images/spatial_dim_plot_wG0.png)
 
 ## References 
 Zeng B, Liu Z, Lu Y, Zhong S, Qin S, Huang L, Zeng Y, Li Z, Dong H, Shi Y, et al. 2023. *The single-cell and spatial transcriptional landscape of human gastrulation and early brain development.* Cell Stem Cell 30: 851–866.e7. [PubMed](https://pubmed.ncbi.nlm.nih.gov/37192616/) 
